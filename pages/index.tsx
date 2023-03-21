@@ -70,8 +70,8 @@ function Room(props) {
       enabled={props.started}
       movementSpeed={0} lookSpeed={.25}
       constrainVertical={true}
-      verticalMin={Math.PI / 6}
-      verticalMax={Math.PI * 5 / 6}
+      verticalMin={Math.PI / 4}
+      verticalMax={Math.PI * 3 / 4}
     />
   </object3D>
 }
