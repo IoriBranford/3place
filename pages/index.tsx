@@ -1,35 +1,78 @@
-import React, { useState } from 'react'
+import React, { MutableRefObject, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { FirstPersonControls } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
+import { Mesh } from 'three';
 
-function Room() {
+function RoomPlane(props) {
+  const ref = useRef<Mesh>(null!)
+  return (
+    <mesh ref={ref} position={props.position} rotation={props.rotation}
+      onPointerOver={() => props.onPointerOver(ref)}
+      onPointerOut={() => props.onPointerOut(ref)}>
+      <planeGeometry args={props.planeGeometry} />
+      <meshStandardMaterial color={props.pointedObject === ref ? 'red' : 'white'} />
+    </mesh>
+  )
+}
+
+function Room(props) {
+  const [pointedObject, setPointedObject] = useState(null as MutableRefObject<Mesh>)
+
+  const onPointerOver = (objectRef: MutableRefObject<Mesh>) => {
+    if (!props.started)
+      return
+    if (pointedObject !== objectRef) {
+      setPointedObject(objectRef)
+    }
+  }
+
+  const onPointerOut = (objectRef: MutableRefObject<Mesh>) => {
+    if (pointedObject === objectRef) {
+      setPointedObject(null)
+    }
+  }
+
   return <object3D>
-    <mesh name='floor' position={[0, -.25, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[2, 2]} />
-      <meshStandardMaterial />
-    </mesh>
-    <mesh name='ceiling' position={[0, .25, 0]} rotation={[Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[2, 2]} />
-      <meshStandardMaterial />
-    </mesh>
-    <mesh name='wallZ0' position={[0, 0, -1]} rotation={[0, 0, 0]}>
-      <planeGeometry args={[2, .5]} />
-      <meshStandardMaterial />
-    </mesh>
-    <mesh name='wallZ1' position={[0, 0, 1]} rotation={[0, Math.PI, 0]}>
-      <planeGeometry args={[2, .5]} />
-      <meshStandardMaterial />
-    </mesh>
-    <mesh name='wallX0' position={[-1, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-      <planeGeometry args={[2, .5]} />
-      <meshStandardMaterial />
-    </mesh>
-    <mesh name='wallX1' position={[1, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
-      <planeGeometry args={[2, .5]} />
-      <meshStandardMaterial />
-    </mesh>
+    <RoomPlane name='floor' position={[0, -.25, 0]} rotation={[-Math.PI / 2, 0, 0]}
+      planeGeometry={[2, 2]}
+      pointedObject={pointedObject}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut} />
+    <RoomPlane name='ceiling' position={[0, .25, 0]} rotation={[Math.PI / 2, 0, 0]}
+      planeGeometry={[2, 2]}
+      pointedObject={pointedObject}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut} />
+    <RoomPlane name='wallZ0' position={[0, 0, -1]} rotation={[0, 0, 0]}
+      planeGeometry={[2, .5]}
+      pointedObject={pointedObject}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut} />
+    <RoomPlane name='wallZ1' position={[0, 0, 1]} rotation={[0, Math.PI, 0]}
+      planeGeometry={[2, .5]}
+      pointedObject={pointedObject}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut} />
+    <RoomPlane name='wallX0' position={[-1, 0, 0]} rotation={[0, Math.PI / 2, 0]}
+      planeGeometry={[2, .5]}
+      pointedObject={pointedObject}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut} />
+    <RoomPlane name='wallX1' position={[1, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
+      planeGeometry={[2, .5]}
+      pointedObject={pointedObject}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut} />
+    <pointLight position={[0, .125, 0]} />
+    <FirstPersonControls
+      enabled={props.started}
+      movementSpeed={0} lookSpeed={.25}
+      constrainVertical={true}
+      verticalMin={Math.PI / 6}
+      verticalMax={Math.PI * 5 / 6}
+    />
   </object3D>
 }
 
@@ -138,15 +181,7 @@ export default function ThreePlace() {
       </style>
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
         camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
-        <pointLight position={[0, .125, 0]} />
-        <Room />
-        <FirstPersonControls
-          enabled={started}
-          movementSpeed={0} lookSpeed={.25}
-          constrainVertical={true}
-          verticalMin={Math.PI / 6}
-          verticalMax={Math.PI * 5 / 6}
-        />
+        <Room started={started} />
       </Canvas>
       {started ? null : (<SplashScreen onClick={() => setStarted(true)} />)}
     </div>
