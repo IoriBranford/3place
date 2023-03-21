@@ -23,6 +23,18 @@ function Box(props: ThreeElements['mesh']) {
 export default function Three() {
     return (
         <div>
+            <style jsx global>{`
+                html,
+                body,
+                body > div:first-child,
+                div#__next,
+                div#__next > div {
+                    padding: 0;
+                    margin: 0;
+                    height: 100%;
+                }
+            `}
+            </style>
             <Canvas>
                 <ambientLight />
                 <pointLight position={[10, 10, 10]} />
