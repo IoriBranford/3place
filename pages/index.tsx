@@ -1,18 +1,25 @@
 import React, { MutableRefObject, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { FirstPersonControls } from '@react-three/drei'
+import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
-import { Mesh } from 'three';
+import { Mesh, RepeatWrapping } from 'three';
 
 function RoomPlane(props) {
   const ref = useRef<Mesh>(null!)
+  const textures = useTexture({
+    map: 'Wood_02-512x512.png'
+  })
+  textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
+  textures.map.wrapS = RepeatWrapping
+  textures.map.wrapT = RepeatWrapping
   return (
     <mesh ref={ref} position={props.position} rotation={props.rotation}
       onPointerOver={() => props.onPointerOver(ref)}
       onPointerOut={() => props.onPointerOut(ref)}>
       <planeGeometry args={props.planeGeometry} />
-      <meshStandardMaterial color={props.pointedObject === ref ? 'red' : 'white'} />
+      <meshStandardMaterial {...textures}
+      color={props.pointedObject === ref ? 'red' : 'white'} />
     </mesh>
   )
 }
