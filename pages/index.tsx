@@ -35,37 +35,37 @@ function Room(props) {
   }
 
   return <object3D>
-    <RoomPlane name='floor' position={[0, -.25, 0]} rotation={[-Math.PI / 2, 0, 0]}
-      planeGeometry={[2, 2]}
+    <RoomPlane name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
+      planeGeometry={[4, 4]}
       pointedObject={pointedObject}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut} />
-    <RoomPlane name='ceiling' position={[0, .25, 0]} rotation={[Math.PI / 2, 0, 0]}
-      planeGeometry={[2, 2]}
+    <RoomPlane name='ceiling' position={[0, .5, 0]} rotation={[Math.PI / 2, 0, 0]}
+      planeGeometry={[4, 4]}
       pointedObject={pointedObject}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut} />
-    <RoomPlane name='wallZ0' position={[0, 0, -1]} rotation={[0, 0, 0]}
-      planeGeometry={[2, .5]}
+    <RoomPlane name='wallZ0' position={[0, 0, -2]} rotation={[0, 0, 0]}
+      planeGeometry={[4, 1]}
       pointedObject={pointedObject}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut} />
-    <RoomPlane name='wallZ1' position={[0, 0, 1]} rotation={[0, Math.PI, 0]}
-      planeGeometry={[2, .5]}
+    <RoomPlane name='wallZ1' position={[0, 0, 2]} rotation={[0, Math.PI, 0]}
+      planeGeometry={[4, 1]}
       pointedObject={pointedObject}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut} />
-    <RoomPlane name='wallX0' position={[-1, 0, 0]} rotation={[0, Math.PI / 2, 0]}
-      planeGeometry={[2, .5]}
+    <RoomPlane name='wallX0' position={[-2, 0, 0]} rotation={[0, Math.PI / 2, 0]}
+      planeGeometry={[4, 1]}
       pointedObject={pointedObject}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut} />
-    <RoomPlane name='wallX1' position={[1, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
-      planeGeometry={[2, .5]}
+    <RoomPlane name='wallX1' position={[2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
+      planeGeometry={[4, 1]}
       pointedObject={pointedObject}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut} />
-    <pointLight position={[0, .125, 0]} />
+    <pointLight position={[0, .25, 0]} />
     <FirstPersonControls
       enabled={props.started}
       movementSpeed={0} lookSpeed={.25}
