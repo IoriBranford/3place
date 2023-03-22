@@ -3,76 +3,58 @@ import { Canvas } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
-import { Mesh, RepeatWrapping } from 'three';
-
-function RoomPlane(props) {
-  const ref = useRef<Mesh>(null!)
-  const textures = useTexture({
-    map: 'Wood_02-512x512.png'
-  })
-  if (props.planeGeometry && props.planeGeometry.length >= 2)
-    textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
-  textures.map.wrapS = RepeatWrapping
-  textures.map.wrapT = RepeatWrapping
-  return (
-    <mesh ref={ref} position={props.position} rotation={props.rotation}
-      onPointerOver={() => props.onPointerOver(ref)}
-      onPointerOut={() => props.onPointerOut(ref)}>
-      <planeGeometry args={props.planeGeometry} />
-      <meshStandardMaterial {...textures}
-      color={props.pointedObject === ref ? 'red' : 'white'} />
-    </mesh>
-  )
-}
+import { Mesh, MeshStandardMaterial, RepeatWrapping } from 'three';
 
 function Room(props) {
-  const [pointedObject, setPointedObject] = useState(null as MutableRefObject<Mesh>)
-
-  const onPointerOver = (objectRef: MutableRefObject<Mesh>) => {
-    if (!props.started)
-      return
-    if (pointedObject !== objectRef) {
-      setPointedObject(objectRef)
+  let pointedObject:MutableRefObject<Mesh> = null!
+  const onPointerOver = (mesh: MutableRefObject<Mesh>) => {
+    if (pointedObject !== mesh) {
+      pointedObject = mesh
+      const standardMaterial = mesh.current.material as MeshStandardMaterial
+      standardMaterial.color.set(0xFF0000)
     }
   }
 
-  const onPointerOut = (objectRef: MutableRefObject<Mesh>) => {
-    if (pointedObject === objectRef) {
-      setPointedObject(null)
+  const onPointerOut = (mesh: MutableRefObject<Mesh>) => {
+    if (pointedObject === mesh) {
+      const standardMaterial = mesh.current.material as MeshStandardMaterial
+      standardMaterial.color.set(0xFFFFFF)
+      pointedObject = null
     }
+  }
+  
+  function Surface(props) {
+    const mesh = useRef<Mesh>(null!)
+    const textures = useTexture({
+      map: 'Wood_02-512x512.png'
+    })
+    if (props.planeGeometry && props.planeGeometry.length >= 2)
+      textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
+    textures.map.wrapS = RepeatWrapping
+    textures.map.wrapT = RepeatWrapping
+    return (
+      <mesh ref={mesh} position={props.position} rotation={props.rotation}
+        onPointerOver={() => onPointerOver(mesh)}
+        onPointerOut={() => onPointerOut(mesh)}>
+        <planeGeometry args={props.planeGeometry} />
+        <meshStandardMaterial {...textures} />
+      </mesh>
+    )
   }
 
   return <object3D>
-    <RoomPlane name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
-      planeGeometry={[4, 4]}
-      pointedObject={pointedObject}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut} />
-    <RoomPlane name='ceiling' position={[0, .5, 0]} rotation={[Math.PI / 2, 0, 0]}
-      planeGeometry={[4, 4]}
-      pointedObject={pointedObject}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut} />
-    <RoomPlane name='wallZ0' position={[0, 0, -2]} rotation={[0, 0, 0]}
-      planeGeometry={[4, 1]}
-      pointedObject={pointedObject}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut} />
-    <RoomPlane name='wallZ1' position={[0, 0, 2]} rotation={[0, Math.PI, 0]}
-      planeGeometry={[4, 1]}
-      pointedObject={pointedObject}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut} />
-    <RoomPlane name='wallX0' position={[-2, 0, 0]} rotation={[0, Math.PI / 2, 0]}
-      planeGeometry={[4, 1]}
-      pointedObject={pointedObject}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut} />
-    <RoomPlane name='wallX1' position={[2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
-      planeGeometry={[4, 1]}
-      pointedObject={pointedObject}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut} />
+    <Surface name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
+      planeGeometry={[4, 4]} />
+    <Surface name='ceiling' position={[0, .5, 0]} rotation={[Math.PI / 2, 0, 0]}
+      planeGeometry={[4, 4]} />
+    <Surface name='wallZ0' position={[0, 0, -2]} rotation={[0, 0, 0]}
+      planeGeometry={[4, 1]} />
+    <Surface name='wallZ1' position={[0, 0, 2]} rotation={[0, Math.PI, 0]}
+      planeGeometry={[4, 1]} />
+    <Surface name='wallX0' position={[-2, 0, 0]} rotation={[0, Math.PI / 2, 0]}
+      planeGeometry={[4, 1]} />
+    <Surface name='wallX1' position={[2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
+      planeGeometry={[4, 1]} />
     <pointLight position={[0, .25, 0]} />
     <FirstPersonControls
       enabled={props.started}
