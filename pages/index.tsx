@@ -5,84 +5,6 @@ import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import { Mesh, MeshStandardMaterial, RepeatWrapping } from 'three';
 
-function Room(props) {
-  let pointedObject:MutableRefObject<Mesh> = null!
-  let clickedObject:MutableRefObject<Mesh> = null!
-
-  const onClick = (mesh: MutableRefObject<Mesh>) => {
-    if (clickedObject) {
-      const standardMaterial = clickedObject.current.material as MeshStandardMaterial
-      standardMaterial.color.set('white')
-    }
-    clickedObject = (clickedObject == mesh ? null : mesh)
-  }
-
-  const onPointerOver = (mesh: MutableRefObject<Mesh>) => {
-    if (pointedObject !== mesh) {
-      pointedObject = mesh
-    }
-  }
-
-  const onPointerOut = (mesh: MutableRefObject<Mesh>) => {
-    if (pointedObject === mesh) {
-      pointedObject = null
-    }
-  }
-  
-  function Surface(props) {
-    const mesh = useRef<Mesh>(null!)
-    const textures = useTexture({
-      map: 'Wood_02-512x512.png'
-    })
-    if (props.planeGeometry && props.planeGeometry.length >= 2)
-      textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
-    textures.map.wrapS = RepeatWrapping
-    textures.map.wrapT = RepeatWrapping
-    return (
-      <mesh ref={mesh} position={props.position} rotation={props.rotation}
-        onClick={()=> onClick(mesh)}
-        onPointerOver={() => onPointerOver(mesh)}
-        onPointerOut={() => onPointerOut(mesh)}
-        >
-        <planeGeometry args={props.planeGeometry} />
-        <meshStandardMaterial {...textures} />
-      </mesh>
-    )
-  }
-
-  useFrame((state, delta) => {
-    if (clickedObject) {
-      const standardMaterial = clickedObject.current.material as MeshStandardMaterial
-      const pulse = (3 + Math.cos(state.clock.elapsedTime * 8*Math.PI)) / 4
-      standardMaterial.color.setScalar(pulse)
-    }
-  })
-
-  return <object3D>
-    <Surface name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
-      planeGeometry={[4, 4]} />
-    <Surface name='ceiling' position={[0, .5, 0]} rotation={[Math.PI / 2, 0, 0]}
-      planeGeometry={[4, 4]} />
-    <Surface name='wallZ0' position={[0, 0, -2]} rotation={[0, 0, 0]}
-      planeGeometry={[4, 1]} />
-    <Surface name='wallZ1' position={[0, 0, 2]} rotation={[0, Math.PI, 0]}
-      planeGeometry={[4, 1]} />
-    <Surface name='wallX0' position={[-2, 0, 0]} rotation={[0, Math.PI / 2, 0]}
-      planeGeometry={[4, 1]} />
-    <Surface name='wallX1' position={[2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
-      planeGeometry={[4, 1]} />
-    <pointLight position={[0, .25, 0]} />
-    {/* <PointerLockControls onUpdate={(self)=>{}}/> */}
-    <FirstPersonControls
-      enabled={props.started}
-      movementSpeed={0} lookSpeed={.25}
-      constrainVertical={true}
-      verticalMin={Math.PI / 4}
-      verticalMax={Math.PI * 3 / 4}
-    />
-  </object3D>
-}
-
 function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>; }) {
   return (
     <div className={styles.container} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }}>
@@ -169,6 +91,84 @@ function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>;
 
 export default function ThreePlace() {
   const [started, setStarted] = useState(false)
+  let pointedObject:MutableRefObject<Mesh> = null!
+  let clickedObject:MutableRefObject<Mesh> = null!
+
+  const onClick = (mesh: MutableRefObject<Mesh>) => {
+    if (clickedObject) {
+      const standardMaterial = clickedObject.current.material as MeshStandardMaterial
+      standardMaterial.color.set('white')
+    }
+    clickedObject = (clickedObject == mesh ? null : mesh)
+  }
+
+  const onPointerOver = (mesh: MutableRefObject<Mesh>) => {
+    if (pointedObject !== mesh) {
+      pointedObject = mesh
+    }
+  }
+
+  const onPointerOut = (mesh: MutableRefObject<Mesh>) => {
+    if (pointedObject === mesh) {
+      pointedObject = null
+    }
+  }
+  
+  function Surface(props) {
+    const mesh = useRef<Mesh>(null!)
+    const textures = useTexture({
+      map: 'Wood_02-512x512.png'
+    })
+    if (props.planeGeometry && props.planeGeometry.length >= 2)
+      textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
+    textures.map.wrapS = RepeatWrapping
+    textures.map.wrapT = RepeatWrapping
+    return (
+      <mesh ref={mesh} position={props.position} rotation={props.rotation}
+        onClick={()=> onClick(mesh)}
+        onPointerOver={() => onPointerOver(mesh)}
+        onPointerOut={() => onPointerOut(mesh)}
+        >
+        <planeGeometry args={props.planeGeometry} />
+        <meshStandardMaterial {...textures} />
+      </mesh>
+    )
+  }
+
+  function Room() {
+    useFrame((state, delta) => {
+      if (clickedObject) {
+        const standardMaterial = clickedObject.current.material as MeshStandardMaterial
+        const pulse = (3 + Math.cos(state.clock.elapsedTime * 8*Math.PI)) / 4
+        standardMaterial.color.setScalar(pulse)
+      }
+    })
+
+    return <object3D>
+      <Surface name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
+        planeGeometry={[4, 4]} />
+      <Surface name='ceiling' position={[0, .5, 0]} rotation={[Math.PI / 2, 0, 0]}
+        planeGeometry={[4, 4]} />
+      <Surface name='wallZ0' position={[0, 0, -2]} rotation={[0, 0, 0]}
+        planeGeometry={[4, 1]} />
+      <Surface name='wallZ1' position={[0, 0, 2]} rotation={[0, Math.PI, 0]}
+        planeGeometry={[4, 1]} />
+      <Surface name='wallX0' position={[-2, 0, 0]} rotation={[0, Math.PI / 2, 0]}
+        planeGeometry={[4, 1]} />
+      <Surface name='wallX1' position={[2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
+        planeGeometry={[4, 1]} />
+      <pointLight position={[0, .25, 0]} />
+      {/* <PointerLockControls onUpdate={(self)=>{}}/> */}
+      <FirstPersonControls
+        enabled={started}
+        movementSpeed={0} lookSpeed={.25}
+        constrainVertical={true}
+        verticalMin={Math.PI / 4}
+        verticalMax={Math.PI * 3 / 4}
+      />
+    </object3D>
+  }
+
   return (
     <div>
       <Head>
@@ -188,7 +188,7 @@ export default function ThreePlace() {
       </style>
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
         camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
-        <Room started={started} />
+        <Room />
       </Canvas>
       {started ? null : (<SplashScreen onClick={() => setStarted(true)} />)}
     </div>
