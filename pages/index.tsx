@@ -1,5 +1,5 @@
 import React, { MutableRefObject, useRef, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
@@ -7,18 +7,24 @@ import { Mesh, MeshStandardMaterial, RepeatWrapping } from 'three';
 
 function Room(props) {
   let pointedObject:MutableRefObject<Mesh> = null!
+  let clickedObject:MutableRefObject<Mesh> = null!
+
+  const onClick = (mesh: MutableRefObject<Mesh>) => {
+    if (clickedObject) {
+      const standardMaterial = clickedObject.current.material as MeshStandardMaterial
+      standardMaterial.color.set('white')
+    }
+    clickedObject = (clickedObject == mesh ? null : mesh)
+  }
+
   const onPointerOver = (mesh: MutableRefObject<Mesh>) => {
     if (pointedObject !== mesh) {
       pointedObject = mesh
-      const standardMaterial = mesh.current.material as MeshStandardMaterial
-      standardMaterial.color.set(0xFF0000)
     }
   }
 
   const onPointerOut = (mesh: MutableRefObject<Mesh>) => {
     if (pointedObject === mesh) {
-      const standardMaterial = mesh.current.material as MeshStandardMaterial
-      standardMaterial.color.set(0xFFFFFF)
       pointedObject = null
     }
   }
@@ -34,13 +40,23 @@ function Room(props) {
     textures.map.wrapT = RepeatWrapping
     return (
       <mesh ref={mesh} position={props.position} rotation={props.rotation}
+        onClick={()=> onClick(mesh)}
         onPointerOver={() => onPointerOver(mesh)}
-        onPointerOut={() => onPointerOut(mesh)}>
+        onPointerOut={() => onPointerOut(mesh)}
+        >
         <planeGeometry args={props.planeGeometry} />
         <meshStandardMaterial {...textures} />
       </mesh>
     )
   }
+
+  useFrame((state, delta) => {
+    if (clickedObject) {
+      const standardMaterial = clickedObject.current.material as MeshStandardMaterial
+      const pulse = (3 + Math.cos(state.clock.elapsedTime * 8*Math.PI)) / 4
+      standardMaterial.color.setScalar(pulse)
+    }
+  })
 
   return <object3D>
     <Surface name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
@@ -56,6 +72,7 @@ function Room(props) {
     <Surface name='wallX1' position={[2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
       planeGeometry={[4, 1]} />
     <pointLight position={[0, .25, 0]} />
+    {/* <PointerLockControls onUpdate={(self)=>{}}/> */}
     <FirstPersonControls
       enabled={props.started}
       movementSpeed={0} lookSpeed={.25}
