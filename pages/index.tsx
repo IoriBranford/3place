@@ -10,7 +10,8 @@ function RoomPlane(props) {
   const textures = useTexture({
     map: 'Wood_02-512x512.png'
   })
-  textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
+  if (props.planeGeometry && props.planeGeometry.length >= 2)
+    textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
   textures.map.wrapS = RepeatWrapping
   textures.map.wrapT = RepeatWrapping
   return (
