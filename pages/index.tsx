@@ -1,93 +1,9 @@
-import React, { MutableRefObject, useRef, useState, useLayoutEffect, forwardRef, MouseEventHandler } from 'react'
+import React, { MutableRefObject, useRef, useState, useLayoutEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
-import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
-
-const SplashScreen = forwardRef<HTMLDivElement, {onStartClick:MouseEventHandler}>((props, ref) => {
-  return (
-    <div ref={ref} className={styles.container} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }}>
-
-      <main>
-        <h1 className={styles.title}>
-          Welcome to 3place!
-        </h1>
-
-        <p className={styles.description}>
-          Your virtual rooms on the Web
-        </p>
-
-        <div className={styles.grid}>
-          <div className={styles.card} onClick={props.onStartClick}>
-            <p>ENTER</p>
-          </div>
-        </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://threejs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by three.js
-        </a>
-      </footer>
-
-      <style jsx>{`
-            main {
-              padding: 5rem 0;
-              flex: 1;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-            }
-            footer {
-              width: 100%;
-              height: 100px;
-              border-top: 1px solid #eaeaea;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            footer img {
-              margin-left: 0.5rem;
-            }
-            footer a {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              text-decoration: none;
-              color: inherit;
-            }
-            code {
-              background: #fafafa;
-              border-radius: 5px;
-              padding: 0.75rem;
-              font-size: 1.1rem;
-              font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-                DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-            }
-          `}</style>
-
-      <style jsx global>{`
-            html,
-            body {
-              padding: 0;
-              margin: 0;
-              font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-                Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-                sans-serif;
-            }
-            * {
-              box-sizing: border-box;
-            }
-          `}</style>
-    </div>
-  )
-})
+import { SplashScreen } from '../components/SplashScreen';
 
 export default function ThreePlace() {
   const splashScreen = useRef<HTMLDivElement>(null!)
