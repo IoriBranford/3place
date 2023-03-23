@@ -1,9 +1,9 @@
-import React, { MutableRefObject, useRef, useState, useMemo } from 'react'
+import React, { MutableRefObject, useRef, useState, useLayoutEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
-import { Mesh, MeshStandardMaterial, RepeatWrapping } from 'three';
+import { Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
 
 function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>; }) {
   return (
@@ -117,14 +117,21 @@ export default function ThreePlace() {
   function Surface(props) {
     const mesh = useRef<Mesh>(null!)
     const standardMaterial = useRef<MeshStandardMaterial>(null!)
-    const textures = useTexture(['Wood_02-512x512.png', 'Bricks_17-512x512.png'])
+    const textures = useTexture(['Wood_02-512x512.png', 'Bricks_17-512x512.png'],
+      (textures:Texture[]) => textures.forEach(texture => {
+        texture.wrapS = texture.wrapT = RepeatWrapping
+      })
+    )
     const [woodTexture, brickTexture] = textures
-    textures.forEach(texture => {
-      if (props.planeGeometry && props.planeGeometry.length >= 2)
-        texture.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
-      texture.wrapS = RepeatWrapping
-      texture.wrapT = RepeatWrapping
-    });
+    const planeGeometry = useRef<PlaneGeometry>(null!)
+    useLayoutEffect(()=> {
+      const uv = planeGeometry.current.attributes.uv
+      uv.array[1] = props.planeGeometry[1]
+      uv.array[2] = props.planeGeometry[0]
+      uv.array[3] = props.planeGeometry[1]
+      uv.array[6] = props.planeGeometry[0]
+      console.log(uv)
+    })
     return (
       <mesh ref={mesh} position={props.position} rotation={props.rotation}
         onClick={()=> {
@@ -136,7 +143,7 @@ export default function ThreePlace() {
         onPointerOver={() => onPointerOver(mesh)}
         onPointerOut={() => onPointerOut(mesh)}
         >
-        <planeGeometry args={props.planeGeometry} />
+        <planeGeometry ref={planeGeometry} args={props.planeGeometry} />
         <meshStandardMaterial ref={standardMaterial} map={woodTexture} />
       </mesh>
     )
