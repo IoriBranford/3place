@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
-import { Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
+import { BufferAttribute, GLBufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
 
 function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>; }) {
   return (
@@ -124,12 +124,18 @@ export default function ThreePlace() {
     )
     const [woodTexture, brickTexture] = textures
     const planeGeometry = useRef<PlaneGeometry>(null!)
+    let width = 1
+    let height = 1
+    if (props.planeGeometry) {
+      width  = props.planeGeometry[0]
+      height = props.planeGeometry[1]
+    }
     useLayoutEffect(()=> {
-      const uv = planeGeometry.current.attributes.uv
-      uv.array[1] = props.planeGeometry[1]
-      uv.array[2] = props.planeGeometry[0]
-      uv.array[3] = props.planeGeometry[1]
-      uv.array[6] = props.planeGeometry[0]
+      const uv = planeGeometry.current.getAttribute('uv') as BufferAttribute
+      uv.setXY(0, 0, height)
+      uv.setXY(1, width, height)
+      uv.setXY(2, 0, 0)
+      uv.setXY(3, width, 0)
       console.log(uv)
     })
     return (
@@ -143,7 +149,7 @@ export default function ThreePlace() {
         onPointerOver={() => onPointerOver(mesh)}
         onPointerOut={() => onPointerOut(mesh)}
         >
-        <planeGeometry ref={planeGeometry} args={props.planeGeometry} />
+        <planeGeometry ref={planeGeometry} args={[width, height]} />
         <meshStandardMaterial ref={standardMaterial} map={woodTexture} />
       </mesh>
     )
