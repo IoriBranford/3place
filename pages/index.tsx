@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useRef, useState } from 'react'
+import React, { MutableRefObject, useRef, useState, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
@@ -116,21 +116,28 @@ export default function ThreePlace() {
   
   function Surface(props) {
     const mesh = useRef<Mesh>(null!)
-    const textures = useTexture({
-      map: 'Wood_02-512x512.png'
-    })
-    if (props.planeGeometry && props.planeGeometry.length >= 2)
-      textures.map.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
-    textures.map.wrapS = RepeatWrapping
-    textures.map.wrapT = RepeatWrapping
+    const standardMaterial = useRef<MeshStandardMaterial>(null!)
+    const textures = useTexture(['Wood_02-512x512.png', 'Bricks_17-512x512.png'])
+    const [woodTexture, brickTexture] = textures
+    textures.forEach(texture => {
+      if (props.planeGeometry && props.planeGeometry.length >= 2)
+        texture.repeat.set(props.planeGeometry[0], props.planeGeometry[1])
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+    });
     return (
       <mesh ref={mesh} position={props.position} rotation={props.rotation}
-        onClick={()=> onClick(mesh)}
+        onClick={()=> {
+          if (standardMaterial.current.map == woodTexture)
+            standardMaterial.current.map = brickTexture
+          else
+          standardMaterial.current.map = woodTexture
+        }}
         onPointerOver={() => onPointerOver(mesh)}
         onPointerOut={() => onPointerOut(mesh)}
         >
         <planeGeometry args={props.planeGeometry} />
-        <meshStandardMaterial {...textures} />
+        <meshStandardMaterial ref={standardMaterial} map={woodTexture} />
       </mesh>
     )
   }
