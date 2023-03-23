@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
-import { BufferAttribute, GLBufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
+import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
 
 function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>; }) {
   return (
@@ -114,48 +114,66 @@ export default function ThreePlace() {
     }
   }
   
-  function Surface(props) {
-    const mesh = useRef<Mesh>(null!)
-    const standardMaterial = useRef<MeshStandardMaterial>(null!)
-    const textures = useTexture(['Wood_02-512x512.png', 'Bricks_17-512x512.png'],
-      (textures:Texture[]) => textures.forEach(texture => {
-        texture.wrapS = texture.wrapT = RepeatWrapping
-      })
-    )
-    const [woodTexture, brickTexture] = textures
-    const planeGeometry = useRef<PlaneGeometry>(null!)
-    let width = 1
-    let height = 1
-    if (props.planeGeometry) {
-      width  = props.planeGeometry[0]
-      height = props.planeGeometry[1]
-    }
-    useLayoutEffect(()=> {
-      const uv = planeGeometry.current.getAttribute('uv') as BufferAttribute
-      uv.setXY(0, 0, height)
-      uv.setXY(1, width, height)
-      uv.setXY(2, 0, 0)
-      uv.setXY(3, width, 0)
-      console.log(uv)
-    })
-    return (
-      <mesh ref={mesh} position={props.position} rotation={props.rotation}
-        onClick={()=> {
-          if (standardMaterial.current.map == woodTexture)
-            standardMaterial.current.map = brickTexture
-          else
-          standardMaterial.current.map = woodTexture
-        }}
-        onPointerOver={() => onPointerOver(mesh)}
-        onPointerOut={() => onPointerOut(mesh)}
-        >
-        <planeGeometry ref={planeGeometry} args={[width, height]} />
-        <meshStandardMaterial ref={standardMaterial} map={woodTexture} />
-      </mesh>
-    )
-  }
-
   function Room() {
+    const [surfaceImages, setSurfaceImages] = useState({
+      floor: 'Bricks_17-512x512.png',
+      ceiling: 'Bricks_17-512x512.png',
+      wallX0: 'Wood_02-512x512.png',
+      wallX1: 'Wood_02-512x512.png',
+      wallZ0: 'Wood_02-512x512.png',
+      wallZ1: 'Wood_02-512x512.png',
+    })
+    function changeSurfaceImages(changes) {
+      for (const key in surfaceImages) {
+        if (!changes[key])
+          changes[key] = surfaceImages[key]
+      }
+      setSurfaceImages(changes)
+    }
+    const surfaceTextures = {}
+    for (const key in surfaceImages) {
+      surfaceTextures[key] = useTexture(surfaceImages[key],
+        (texture:Texture) => {
+          texture.wrapS = texture.wrapT = RepeatWrapping
+        }
+      )
+    }
+    // console.log(surfaceTextures)
+
+    function Surface(props) {
+      const mesh = useRef<Mesh>(null!)
+      const standardMaterial = useRef<MeshStandardMaterial>(null!)
+      const planeGeometry = useRef<PlaneGeometry>(null!)
+      let width = 1
+      let height = 1
+      if (props.planeGeometry) {
+        width  = props.planeGeometry[0]
+        height = props.planeGeometry[1]
+      }
+      useLayoutEffect(()=> {
+        const uv = planeGeometry.current.getAttribute('uv') as BufferAttribute
+        uv.setXY(0, 0, height)
+        uv.setXY(1, width, height)
+        uv.setXY(2, 0, 0)
+        uv.setXY(3, width, 0)
+      })
+      return (
+        <mesh ref={mesh} position={props.position} rotation={props.rotation}
+          onClick={()=> {
+            if (surfaceImages[props.name] == 'Wood_02-512x512.png')
+              changeSurfaceImages({[props.name]: 'Bricks_17-512x512.png'})
+            else
+              changeSurfaceImages({[props.name]: 'Wood_02-512x512.png'})
+          }}
+          onPointerOver={() => onPointerOver(mesh)}
+          onPointerOut={() => onPointerOut(mesh)}
+          >
+          <planeGeometry ref={planeGeometry} args={[width, height]} />
+          <meshStandardMaterial ref={standardMaterial} map={surfaceTextures[props.name]} />
+        </mesh>
+      )
+    }
+
     useFrame((state, delta) => {
       if (clickedObject) {
         const standardMaterial = clickedObject.current.material as MeshStandardMaterial
