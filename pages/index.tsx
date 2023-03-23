@@ -211,6 +211,7 @@ export default function ThreePlace() {
     <div>
       <Head>
         <title>3place</title>
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png"></link>
       </Head>
       <style jsx global>{`
                 html,
