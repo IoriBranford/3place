@@ -1,13 +1,13 @@
-import React, { MutableRefObject, useRef, useState, useLayoutEffect } from 'react'
+import React, { MutableRefObject, useRef, useState, useLayoutEffect, forwardRef, MouseEventHandler } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, useTexture } from '@react-three/drei'
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
 
-function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>; }) {
+const SplashScreen = forwardRef<HTMLDivElement, {onStartClick:MouseEventHandler}>((props, ref) => {
   return (
-    <div className={styles.container} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }}>
+    <div ref={ref} className={styles.container} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }}>
 
       <main>
         <h1 className={styles.title}>
@@ -19,7 +19,7 @@ function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>;
         </p>
 
         <div className={styles.grid}>
-          <div className={styles.card} onClick={props.onClick}>
+          <div className={styles.card} onClick={props.onStartClick}>
             <p>ENTER</p>
           </div>
         </div>
@@ -87,12 +87,23 @@ function SplashScreen(props: { onClick: React.MouseEventHandler<HTMLDivElement>;
           `}</style>
     </div>
   )
-}
+})
 
 export default function ThreePlace() {
-  const [started, setStarted] = useState(false)
+  const splashScreen = useRef<HTMLDivElement>(null!)
+  const controls = useRef(null!)
   let pointedObject:MutableRefObject<Mesh> = null!
   let clickedObject:MutableRefObject<Mesh> = null!
+
+  function Controls() {
+    return (<FirstPersonControls ref={controls}
+      enabled={false}
+      movementSpeed={0} lookSpeed={.25}
+      constrainVertical={true}
+      verticalMin={Math.PI / 4}
+      verticalMax={Math.PI * 3 / 4}
+    />)
+  }
 
   const onClick = (mesh: MutableRefObject<Mesh>) => {
     if (clickedObject) {
@@ -196,14 +207,6 @@ export default function ThreePlace() {
       <Surface name='wallX1' position={[2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
         planeGeometry={[4, 1]} />
       <pointLight position={[0, .25, 0]} />
-      {/* <PointerLockControls onUpdate={(self)=>{}}/> */}
-      <FirstPersonControls
-        enabled={started}
-        movementSpeed={0} lookSpeed={.25}
-        constrainVertical={true}
-        verticalMin={Math.PI / 4}
-        verticalMax={Math.PI * 3 / 4}
-      />
     </object3D>
   }
 
@@ -228,8 +231,12 @@ export default function ThreePlace() {
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
         camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
         <Room />
+        <Controls/>
       </Canvas>
-      {started ? null : (<SplashScreen onClick={() => setStarted(true)} />)}
+      <SplashScreen ref={splashScreen} onStartClick={() => {
+        controls.current.enabled = true
+        splashScreen.current.remove()
+      }} />
     </div>
   )
 }
