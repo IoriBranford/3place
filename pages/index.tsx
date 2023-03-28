@@ -1,6 +1,6 @@
 import React, { MutableRefObject, useRef, useState, useLayoutEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { FirstPersonControls, useTexture } from '@react-three/drei'
+import { FirstPersonControls, Plane, ScreenSpace, useTexture } from '@react-three/drei'
 import Head from 'next/head';
 import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
 import { SplashScreen } from '../components/SplashScreen';
@@ -114,9 +114,18 @@ export function Scene() {
     </object3D>
   }
 
+  const uiScale = 1/8
   return (
     <>
       <Room />
+      <ScreenSpace depth={(uiScale)}>
+        <Plane position={[0,0,0]} scale={[uiScale,uiScale,uiScale]}>
+          <meshStandardMaterial map={surfaceTextures['floor']}/>
+        </Plane>
+        <Plane position={[uiScale,0,0]} scale={[uiScale,uiScale,uiScale]}>
+          <meshStandardMaterial map={surfaceTextures['wallX0']}/>
+        </Plane>
+      </ScreenSpace>
     </>
   )
 }
