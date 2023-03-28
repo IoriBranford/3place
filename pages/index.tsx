@@ -1,20 +1,30 @@
 import React, { MutableRefObject, useRef, useState, useLayoutEffect } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { FirstPersonControls, Plane, ScreenSpace, useTexture } from '@react-three/drei'
+import { Canvas, ThreeEvent, useFrame } from '@react-three/fiber'
+import { FirstPersonControls, ScreenSpace, useTexture } from '@react-three/drei'
 import Head from 'next/head';
-import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Sprite, Texture, Vector3 } from 'three';
+import { BufferAttribute, Group, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture, Vector3 } from 'three';
 import { SplashScreen } from '../components/SplashScreen';
 
-export function Scene() {
+export function Scene(props) {
   let pointedObject:MutableRefObject<Mesh> = null!
   let clickedObject:MutableRefObject<Mesh> = null!
+  const textureSelector = useRef<Group>(null!)
 
-  const onClick = (mesh: MutableRefObject<Mesh>) => {
+  function onClickTexture(event:ThreeEvent<MouseEvent>) {
+    event.stopPropagation()
+    clickedObject = null
+    textureSelector.current.visible = false
+    props.controlsRef.current.enabled = true
+  }
+
+  const onClickSurface = (mesh: MutableRefObject<Mesh>) => {
     if (clickedObject) {
       const standardMaterial = clickedObject.current.material as MeshStandardMaterial
       standardMaterial.color.set('white')
     }
     clickedObject = (clickedObject == mesh ? null : mesh)
+    textureSelector.current.visible = (clickedObject != null)
+    props.controlsRef.current.enabled = (clickedObject == null)
   }
 
   const onPointerOver = (mesh: MutableRefObject<Mesh>) => {
@@ -73,12 +83,7 @@ export function Scene() {
     })
     return (
       <mesh ref={mesh} position={props.position} rotation={props.rotation}
-        onClick={()=> {
-          if (surfaceImages[props.name] == 'Wood_02-512x512.png')
-            changeSurfaceImages({[props.name]: 'Bricks_17-512x512.png'})
-          else
-            changeSurfaceImages({[props.name]: 'Wood_02-512x512.png'})
-        }}
+        onClick={()=> onClickSurface(mesh)}
         onPointerOver={() => onPointerOver(mesh)}
         onPointerOut={() => onPointerOut(mesh)}
         >
@@ -116,17 +121,23 @@ export function Scene() {
 
   const depth = 1/8
   const scale = new Vector3(1/32, 1/32, 1)
-  return (
-    <>
-      <Room />
-      <ScreenSpace depth={depth} scale={scale}>
-        <sprite position={[6, 0, 0]}>
+  function TextureSelector() {
+    return (
+      <ScreenSpace ref={textureSelector} depth={depth} scale={scale} visible={false}>
+        <sprite position={[6, 0, 0]} onClick={onClickTexture}>
           <spriteMaterial map={surfaceTextures['floor']}/>
         </sprite>
-        <sprite position={[6, 1, 0]}>
+        <sprite position={[6, 1, 0]} onClick={onClickTexture}>
           <spriteMaterial map={surfaceTextures['wallX0']}/>
         </sprite>
       </ScreenSpace>
+    )
+  }
+
+  return (
+    <>
+      <Room />
+      <TextureSelector/>
     </>
   )
 }
@@ -154,7 +165,6 @@ export default function ThreePlace() {
       </style>
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
         camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
-        <Scene/>
         <FirstPersonControls ref={controls}
           enabled={false}
           movementSpeed={0} lookSpeed={.25}
@@ -162,6 +172,7 @@ export default function ThreePlace() {
           verticalMin={Math.PI / 4}
           verticalMax={Math.PI * 3 / 4}
         />
+        <Scene controlsRef={controls}/>
       </Canvas>
       <SplashScreen ref={splashScreen} onStartClick={() => {
         controls.current.enabled = true
