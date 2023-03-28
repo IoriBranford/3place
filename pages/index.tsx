@@ -2,7 +2,7 @@ import React, { MutableRefObject, useRef, useState, useLayoutEffect } from 'reac
 import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, Plane, ScreenSpace, useTexture } from '@react-three/drei'
 import Head from 'next/head';
-import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
+import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Sprite, Texture, Vector3 } from 'three';
 import { SplashScreen } from '../components/SplashScreen';
 
 export function Scene() {
@@ -114,17 +114,18 @@ export function Scene() {
     </object3D>
   }
 
-  const uiScale = 1/8
+  const depth = 1/8
+  const scale = new Vector3(1/32, 1/32, 1)
   return (
     <>
       <Room />
-      <ScreenSpace depth={(uiScale)}>
-        <Plane position={[0,0,0]} scale={[uiScale,uiScale,uiScale]}>
-          <meshStandardMaterial map={surfaceTextures['floor']}/>
-        </Plane>
-        <Plane position={[uiScale,0,0]} scale={[uiScale,uiScale,uiScale]}>
-          <meshStandardMaterial map={surfaceTextures['wallX0']}/>
-        </Plane>
+      <ScreenSpace depth={depth} scale={scale}>
+        <sprite position={[6, 0, 0]}>
+          <spriteMaterial map={surfaceTextures['floor']}/>
+        </sprite>
+        <sprite position={[6, 1, 0]}>
+          <spriteMaterial map={surfaceTextures['wallX0']}/>
+        </sprite>
       </ScreenSpace>
     </>
   )
