@@ -5,21 +5,9 @@ import Head from 'next/head';
 import { BufferAttribute, Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, Texture } from 'three';
 import { SplashScreen } from '../components/SplashScreen';
 
-export default function ThreePlace() {
-  const splashScreen = useRef<HTMLDivElement>(null!)
-  const controls = useRef(null!)
+export function Scene() {
   let pointedObject:MutableRefObject<Mesh> = null!
   let clickedObject:MutableRefObject<Mesh> = null!
-
-  function Controls() {
-    return (<FirstPersonControls ref={controls}
-      enabled={false}
-      movementSpeed={0} lookSpeed={.25}
-      constrainVertical={true}
-      verticalMin={Math.PI / 4}
-      verticalMax={Math.PI * 3 / 4}
-    />)
-  }
 
   const onClick = (mesh: MutableRefObject<Mesh>) => {
     if (clickedObject) {
@@ -40,67 +28,67 @@ export default function ThreePlace() {
       pointedObject = null
     }
   }
-  
-  function Room() {
-    const [surfaceImages, setSurfaceImages] = useState({
-      floor: 'Bricks_17-512x512.png',
-      ceiling: 'Bricks_17-512x512.png',
-      wallX0: 'Wood_02-512x512.png',
-      wallX1: 'Wood_02-512x512.png',
-      wallZ0: 'Wood_02-512x512.png',
-      wallZ1: 'Wood_02-512x512.png',
-    })
-    function changeSurfaceImages(changes) {
-      for (const key in surfaceImages) {
-        if (!changes[key])
-          changes[key] = surfaceImages[key]
-      }
-      setSurfaceImages(changes)
-    }
-    const surfaceTextures = {}
+
+  const [surfaceImages, setSurfaceImages] = useState({
+    floor: 'Bricks_17-512x512.png',
+    ceiling: 'Bricks_17-512x512.png',
+    wallX0: 'Wood_02-512x512.png',
+    wallX1: 'Wood_02-512x512.png',
+    wallZ0: 'Wood_02-512x512.png',
+    wallZ1: 'Wood_02-512x512.png',
+  })
+  function changeSurfaceImages(changes) {
     for (const key in surfaceImages) {
-      surfaceTextures[key] = useTexture(surfaceImages[key],
-        (texture:Texture) => {
-          texture.wrapS = texture.wrapT = RepeatWrapping
-        }
-      )
+      if (!changes[key])
+        changes[key] = surfaceImages[key]
     }
-    // console.log(surfaceTextures)
-
-    function Surface(props) {
-      const mesh = useRef<Mesh>(null!)
-      const standardMaterial = useRef<MeshStandardMaterial>(null!)
-      const planeGeometry = useRef<PlaneGeometry>(null!)
-      let width = 1
-      let height = 1
-      if (props.planeGeometry) {
-        width  = props.planeGeometry[0]
-        height = props.planeGeometry[1]
+    setSurfaceImages(changes)
+  }
+  const surfaceTextures = {}
+  for (const key in surfaceImages) {
+    surfaceTextures[key] = useTexture(surfaceImages[key],
+      (texture:Texture) => {
+        texture.wrapS = texture.wrapT = RepeatWrapping
       }
-      useLayoutEffect(()=> {
-        const uv = planeGeometry.current.getAttribute('uv') as BufferAttribute
-        uv.setXY(0, 0, height)
-        uv.setXY(1, width, height)
-        uv.setXY(2, 0, 0)
-        uv.setXY(3, width, 0)
-      })
-      return (
-        <mesh ref={mesh} position={props.position} rotation={props.rotation}
-          onClick={()=> {
-            if (surfaceImages[props.name] == 'Wood_02-512x512.png')
-              changeSurfaceImages({[props.name]: 'Bricks_17-512x512.png'})
-            else
-              changeSurfaceImages({[props.name]: 'Wood_02-512x512.png'})
-          }}
-          onPointerOver={() => onPointerOver(mesh)}
-          onPointerOut={() => onPointerOut(mesh)}
-          >
-          <planeGeometry ref={planeGeometry} args={[width, height]} />
-          <meshStandardMaterial ref={standardMaterial} map={surfaceTextures[props.name]} />
-        </mesh>
-      )
+    )
+  }
+  // console.log(surfaceTextures)
+  
+  function Surface(props) {
+    const mesh = useRef<Mesh>(null!)
+    const standardMaterial = useRef<MeshStandardMaterial>(null!)
+    const planeGeometry = useRef<PlaneGeometry>(null!)
+    let width = 1
+    let height = 1
+    if (props.planeGeometry) {
+      width  = props.planeGeometry[0]
+      height = props.planeGeometry[1]
     }
+    useLayoutEffect(()=> {
+      const uv = planeGeometry.current.getAttribute('uv') as BufferAttribute
+      uv.setXY(0, 0, height)
+      uv.setXY(1, width, height)
+      uv.setXY(2, 0, 0)
+      uv.setXY(3, width, 0)
+    })
+    return (
+      <mesh ref={mesh} position={props.position} rotation={props.rotation}
+        onClick={()=> {
+          if (surfaceImages[props.name] == 'Wood_02-512x512.png')
+            changeSurfaceImages({[props.name]: 'Bricks_17-512x512.png'})
+          else
+            changeSurfaceImages({[props.name]: 'Wood_02-512x512.png'})
+        }}
+        onPointerOver={() => onPointerOver(mesh)}
+        onPointerOut={() => onPointerOut(mesh)}
+        >
+        <planeGeometry ref={planeGeometry} args={[width, height]} />
+        <meshStandardMaterial ref={standardMaterial} map={surfaceTextures[props.name]} />
+      </mesh>
+    )
+  }
 
+  function Room() {
     useFrame((state, delta) => {
       if (clickedObject) {
         const standardMaterial = clickedObject.current.material as MeshStandardMaterial
@@ -127,7 +115,17 @@ export default function ThreePlace() {
   }
 
   return (
-    <div>
+    <>
+      <Room />
+    </>
+  )
+}
+
+export default function ThreePlace() {
+  const splashScreen = useRef<HTMLDivElement>(null!)
+  const controls = useRef(null!)
+  return (
+    <>
       <Head>
         <title>3place</title>
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png"></link>
@@ -146,13 +144,19 @@ export default function ThreePlace() {
       </style>
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
         camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
-        <Room />
-        <Controls/>
+        <Scene/>
+        <FirstPersonControls ref={controls}
+          enabled={false}
+          movementSpeed={0} lookSpeed={.25}
+          constrainVertical={true}
+          verticalMin={Math.PI / 4}
+          verticalMax={Math.PI * 3 / 4}
+        />
       </Canvas>
       <SplashScreen ref={splashScreen} onStartClick={() => {
         controls.current.enabled = true
         splashScreen.current.remove()
       }} />
-    </div>
+    </>
   )
 }
