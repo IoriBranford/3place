@@ -110,7 +110,6 @@ export function Scene() {
 }
 
 export default function ThreePlace() {
-  const splashScreen = useRef<HTMLDivElement>(null!)
   const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
   const app = new App(firstPersonControls)
   return (
@@ -143,10 +142,7 @@ export default function ThreePlace() {
           />
           <Scene />
         </Canvas>
-        <SplashScreen ref={splashScreen} onStartClick={() => {
-          firstPersonControls.current.enabled = true
-          splashScreen.current.remove()
-        }} />
+        <SplashScreen />
       </AppContext.Provider>
     </>
   )

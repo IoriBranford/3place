@@ -1,37 +1,45 @@
-import { forwardRef, MouseEventHandler } from "react"
+import { CSSProperties, forwardRef, MouseEventHandler, useContext, useRef } from "react"
 import styles from '../styles/Home.module.css';
+import { AppContext } from "../contexts/App";
 
-export const SplashScreen = forwardRef<HTMLDivElement, {onStartClick:MouseEventHandler}>((props, ref) => {
-    return (
-      <div ref={ref} className={styles.container} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }}>
-  
-        <main>
-          <h1 className={styles.title}>
-            Welcome to 3place!
-          </h1>
-  
-          <p className={styles.description}>
-            Your virtual rooms on the Web
-          </p>
-  
-          <div className={styles.grid}>
-            <div className={styles.card} onClick={props.onStartClick}>
-              <p>ENTER</p>
-            </div>
+export function SplashScreen() {
+  let app = useContext(AppContext)
+  let self = useRef<HTMLDivElement>(null!)
+  let style = { position: 'absolute', left: 0, top: 0, width: '100%' } as CSSProperties
+  function onStartClick() {
+    self.current.remove()
+    app.setControlsEnabled(true)
+  }
+  return (
+    <div ref={self} className={styles.container} style={style}>
+
+      <main>
+        <h1 className={styles.title}>
+          Welcome to 3place!
+        </h1>
+
+        <p className={styles.description}>
+          Your virtual rooms on the Web
+        </p>
+
+        <div className={styles.grid}>
+          <div className={styles.card} onClick={onStartClick}>
+            <p>ENTER</p>
           </div>
-        </main>
-  
-        <footer>
-          <a
-            href="https://threejs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Powered by three.js
-          </a>
-        </footer>
-  
-        <style jsx>{`
+        </div>
+      </main>
+
+      <footer>
+        <a
+          href="https://threejs.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Powered by three.js
+        </a>
+      </footer>
+
+      <style jsx>{`
               main {
                 padding: 5rem 0;
                 flex: 1;
@@ -67,8 +75,8 @@ export const SplashScreen = forwardRef<HTMLDivElement, {onStartClick:MouseEventH
                   DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
               }
             `}</style>
-  
-        <style jsx global>{`
+
+      <style jsx global>{`
               html,
               body {
                 padding: 0;
@@ -81,7 +89,6 @@ export const SplashScreen = forwardRef<HTMLDivElement, {onStartClick:MouseEventH
                 box-sizing: border-box;
               }
             `}</style>
-      </div>
-    )
-  })
-  
+    </div>
+  )
+}
