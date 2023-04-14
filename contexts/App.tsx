@@ -10,6 +10,10 @@ export class App {
         this.firstPersonControls = controls
     }
 
+    setControlsEnabled(enabled:boolean) : void {
+        this.firstPersonControls.current.enabled = enabled
+    }
+    
     onClickMesh(mesh: Mesh): void {
         if (this.selectedMesh) {
             const standardMaterial = this.selectedMesh.material as MeshStandardMaterial
