@@ -1,11 +1,11 @@
-import React, { MutableRefObject, useRef, useLayoutEffect, createContext, useContext } from 'react'
+import React, { MutableRefObject, useRef, useLayoutEffect, useContext } from 'react'
 import { Canvas, ThreeEvent, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, Plane, useTexture } from '@react-three/drei'
 import Head from 'next/head';
-import { BufferAttribute, Mesh, MeshStandardMaterial, RepeatWrapping, Texture } from 'three';
+import { BufferAttribute, Mesh, RepeatWrapping, Texture } from 'three';
 import { SplashScreen } from '../components/SplashScreen';
-
-const SceneContext = createContext(null)
+import { App, AppContext } from '../contexts/App';
+import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 
 function Surface({
   name = '',
@@ -16,20 +16,20 @@ function Surface({
   image = '',
 }) {
   const mesh = useRef<Mesh>(null!)
-  const context = useContext(SceneContext)
-  useLayoutEffect(()=> {
+  const context = useContext(AppContext)
+  useLayoutEffect(() => {
     const uv = mesh.current.geometry.getAttribute('uv') as BufferAttribute
     uv.setXY(0, 0, height)
     uv.setXY(1, width, height)
     uv.setXY(2, 0, 0)
     uv.setXY(3, width, 0)
   })
-  const texture = image == '' ? null : useTexture(image, (texture:Texture) => {
+  const texture = image == '' ? null : useTexture(image, (texture: Texture) => {
     texture.wrapS = texture.wrapT = RepeatWrapping
   })
   return (
     <Plane name={name} ref={mesh} position={position} rotation={rotation}
-      onClick={()=>{context.onClickSurface(mesh)}} args={[width, height]}>
+      onClick={() => { context.onClickMesh(mesh.current) }} args={[width, height]}>
       <meshStandardMaterial map={texture} />
     </Plane>
   )
@@ -46,7 +46,7 @@ function Room() {
   }
   return <>
     <Surface name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
-      width={4} height={4} image={images.floor}/>
+      width={4} height={4} image={images.floor} />
     <Surface name='ceiling' position={[0, .5, 0]} rotation={[Math.PI / 2, 0, 0]}
       width={4} height={4} image={images.ceiling} />
     <Surface name='wallZ0' position={[0, 0, -2]} rotation={[0, 0, 0]}
@@ -61,26 +61,16 @@ function Room() {
   </>
 }
 
-export function Scene({controlsRef}) {
-  let pointedObject:MutableRefObject<Mesh> = null!
-  let clickedObject:MutableRefObject<Mesh> = null!
+export function Scene() {
+  let context = useContext(AppContext)
+  let pointedObject: MutableRefObject<Mesh> = null!
   // const textureSelector = useRef<Group>(null!)
 
-  function onClickTexture(event:ThreeEvent<MouseEvent>) {
+  function onClickTexture(event: ThreeEvent<MouseEvent>) {
     event.stopPropagation()
-    clickedObject = null
+    // clickedObject = null
     // textureSelector.current.visible = false
-    controlsRef.current.enabled = true
-  }
-
-  const onClickSurface = (mesh: MutableRefObject<Mesh>) => {
-    if (clickedObject) {
-      const standardMaterial = clickedObject.current.material as MeshStandardMaterial
-      standardMaterial.color.set('white')
-    }
-    clickedObject = (clickedObject == mesh ? null : mesh)
-    // textureSelector.current.visible = (clickedObject != null)
-    controlsRef.current.enabled = (clickedObject == null)
+    // controlsRef.current.enabled = true
   }
 
   const onPointerOverSurface = (mesh: MutableRefObject<Mesh>) => {
@@ -96,11 +86,7 @@ export function Scene({controlsRef}) {
   }
 
   useFrame((state, delta) => {
-    if (clickedObject) {
-      const standardMaterial = clickedObject.current.material as MeshStandardMaterial
-      const pulse = (3 + Math.cos(state.clock.elapsedTime * 8*Math.PI)) / 4
-      standardMaterial.color.setScalar(pulse)
-    }
+    context.flashSelectedMesh(state.clock.elapsedTime)
   })
 
   // const depth = 1/8
@@ -119,18 +105,14 @@ export function Scene({controlsRef}) {
   // }
 
   return (
-    <SceneContext.Provider value={{
-      onClickSurface:onClickSurface
-    }}>
-      <Room />
-      {/* <TextureSelector/> */}
-    </SceneContext.Provider>
+    <Room />
   )
 }
 
 export default function ThreePlace() {
   const splashScreen = useRef<HTMLDivElement>(null!)
-  const controls = useRef(null!)
+  const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
+  const app = new App(firstPersonControls)
   return (
     <>
       <Head>
@@ -149,21 +131,23 @@ export default function ThreePlace() {
                 }
             `}
       </style>
-      <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-        camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
-        <FirstPersonControls ref={controls}
-          enabled={false}
-          movementSpeed={0} lookSpeed={.25}
-          constrainVertical={true}
-          verticalMin={Math.PI / 4}
-          verticalMax={Math.PI * 3 / 4}
-        />
-        <Scene controlsRef={controls}/>
-      </Canvas>
-      <SplashScreen ref={splashScreen} onStartClick={() => {
-        controls.current.enabled = true
-        splashScreen.current.remove()
-      }} />
+      <AppContext.Provider value={app}>
+        <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
+          camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
+          <FirstPersonControls ref={firstPersonControls}
+            enabled={false}
+            movementSpeed={0} lookSpeed={.25}
+            constrainVertical={true}
+            verticalMin={Math.PI / 4}
+            verticalMax={Math.PI * 3 / 4}
+          />
+          <Scene />
+        </Canvas>
+        <SplashScreen ref={splashScreen} onStartClick={() => {
+          firstPersonControls.current.enabled = true
+          splashScreen.current.remove()
+        }} />
+      </AppContext.Provider>
     </>
   )
 }
