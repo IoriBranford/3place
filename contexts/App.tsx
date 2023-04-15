@@ -1,5 +1,5 @@
 import { MutableRefObject, createContext } from "react";
-import { Mesh, MeshStandardMaterial, RepeatWrapping, Texture, TextureLoader } from "three";
+import { Mesh, MeshStandardMaterial, RepeatWrapping, Texture, TextureLoader, sRGBEncoding } from "three";
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 
 export class App {
@@ -40,6 +40,7 @@ export class App {
         if (!texture) {
             texture = this.textureLoader.load(url)
             texture.wrapS = texture.wrapT = RepeatWrapping
+            texture.encoding = sRGBEncoding
             this.textures[url] = texture
         }
         return texture
