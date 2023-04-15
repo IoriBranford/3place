@@ -1,11 +1,12 @@
 import React, { MutableRefObject, useRef, useLayoutEffect, useContext } from 'react'
 import { Canvas, ThreeEvent, useFrame } from '@react-three/fiber'
-import { FirstPersonControls, Plane, useTexture } from '@react-three/drei'
+import { FirstPersonControls, Plane } from '@react-three/drei'
 import Head from 'next/head';
-import { BufferAttribute, Mesh, RepeatWrapping, Texture } from 'three';
+import { BufferAttribute, Mesh } from 'three';
 import { SplashScreen } from '../components/SplashScreen';
 import { App, AppContext } from '../contexts/App';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
+import { TextureMenu } from '../components/TextureMenu';
 
 function Surface({
   name = '',
@@ -16,7 +17,7 @@ function Surface({
   image = '',
 }) {
   const mesh = useRef<Mesh>(null!)
-  const context = useContext(AppContext)
+  const app = useContext(AppContext)
   useLayoutEffect(() => {
     const uv = mesh.current.geometry.getAttribute('uv') as BufferAttribute
     uv.setXY(0, 0, height)
@@ -24,12 +25,10 @@ function Surface({
     uv.setXY(2, 0, 0)
     uv.setXY(3, width, 0)
   })
-  const texture = image == '' ? null : useTexture(image, (texture: Texture) => {
-    texture.wrapS = texture.wrapT = RepeatWrapping
-  })
+  const texture = image == '' ? null : app.getTexture(image)
   return (
     <Plane name={name} ref={mesh} position={position} rotation={rotation}
-      onClick={() => { context.onClickMesh(mesh.current) }} args={[width, height]}>
+      onClick={() => { app.onClickMesh(mesh.current) }} args={[width, height]}>
       <meshStandardMaterial map={texture} />
     </Plane>
   )
@@ -37,12 +36,12 @@ function Surface({
 
 function Room() {
   let images = {
-    floor: 'Bricks_17-512x512.png',
-    ceiling: 'Bricks_17-512x512.png',
-    wallX0: 'Wood_02-512x512.png',
-    wallX1: 'Wood_02-512x512.png',
-    wallZ0: 'Wood_02-512x512.png',
-    wallZ1: 'Wood_02-512x512.png',
+    floor: '/bricks.png',
+    ceiling: '/bricks.png',
+    wallX0: '/wood.png',
+    wallX1: '/wood.png',
+    wallZ0: '/wood.png',
+    wallZ1: '/wood.png',
   }
   return <>
     <Surface name='floor' position={[0, -.5, 0]} rotation={[-Math.PI / 2, 0, 0]}
@@ -143,6 +142,7 @@ export default function ThreePlace() {
           <Scene />
         </Canvas>
         <SplashScreen />
+        <TextureMenu />
       </AppContext.Provider>
     </>
   )
