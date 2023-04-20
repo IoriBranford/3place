@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction, createContext } from "react"
 import { Mesh, MeshStandardMaterial, Texture } from "three"
+import { GuiState } from "../components/Gui"
 
 export class Editor {
     private selectedMesh: Mesh = null
     private pointedMesh: Mesh = null
 
-    setActiveMenu: Dispatch<SetStateAction<string>>
+    guiState: GuiState = null
 
     onPointerOnMesh(mesh: Mesh) {
         if (this.pointedMesh !== mesh) {
@@ -21,8 +22,8 @@ export class Editor {
 
     onClickMesh(mesh: Mesh): void {
         this.setSelectedMesh(mesh)
-        if (this.setActiveMenu)
-            this.setActiveMenu('TextureMenu')
+        if (this.guiState)
+            this.guiState.setActiveMenu('TextureMenu')
     }
 
     flashSelectedMesh(elapsedTime: number): void {

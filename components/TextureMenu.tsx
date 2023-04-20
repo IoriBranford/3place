@@ -45,7 +45,7 @@ export function TextureMenu() {
     function onCloseClick() {
         editor.setSelectedMesh(null)
         controls.setEnabled(true)
-        editor.setActiveMenu('')
+        gui.setActiveMenu('')
     }
     return (
         <div ref={self} style={style}>

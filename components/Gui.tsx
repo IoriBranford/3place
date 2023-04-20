@@ -1,16 +1,22 @@
-import { createContext, useContext, useState } from "react"
+import { Dispatch, SetStateAction, createContext, useContext, useState } from "react"
 import { EditorContext } from "../contexts/Editor"
 import { SplashScreen } from "./SplashScreen"
 import { TextureMenu } from "./TextureMenu"
 
-export const GuiContext = createContext(null)
+export interface GuiState {
+    activeMenu: string
+    setActiveMenu: Dispatch<SetStateAction<string>>
+}
+
+export const GuiContext = createContext(null as GuiState)
 
 export function Gui({ firstMenu = '' }) {
-    const editor = useContext(EditorContext)
     const [activeMenu, setActiveMenu] = useState(firstMenu)
-    editor.setActiveMenu = setActiveMenu
-
     const guiState = { activeMenu, setActiveMenu }
+
+    const editor = useContext(EditorContext)
+    editor.guiState = guiState
+
     return (
         <GuiContext.Provider value={guiState}>
             <SplashScreen />
