@@ -3,6 +3,7 @@ import Image from "next/image"
 import { EditorContext } from "../contexts/Editor"
 import { ControlsContext } from "../contexts/Controls"
 import { AssetsContext } from "../contexts/Assets"
+import { GuiContext } from "./Gui"
 
 const AllTextures = [
     '/basket.png',
@@ -28,6 +29,10 @@ const AllTextures = [
 ]
 
 export function TextureMenu() {
+    const gui = useContext(GuiContext)
+    if (gui.activeMenu != 'TextureMenu') {
+        return <></>
+    }
     const editor = useContext(EditorContext)
     const controls = useContext(ControlsContext)
     const assets = useContext(AssetsContext)
@@ -36,13 +41,12 @@ export function TextureMenu() {
     function onTextureClick(image: string) {
         const texture = assets.getTexture(image)
         editor.setSelectedMeshTexture(texture)
+    }
+    function onCloseClick() {
         editor.setSelectedMesh(null)
         controls.setEnabled(true)
-        // self.current.remove()
+        editor.setActiveMenu('')
     }
-    // if (!app.isMeshSelected()) {
-    //     return <></>
-    // }
     return (
         <div ref={self} style={style}>
             {
@@ -50,6 +54,8 @@ export function TextureMenu() {
                     <Image src={image} alt={image} width={64} height={64} onClick={() => onTextureClick(image)} />
                 ))
             }
+            <br/>
+            <button onClick={onCloseClick}>Done</button>
         </div>
     )
 }

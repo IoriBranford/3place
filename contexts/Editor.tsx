@@ -1,11 +1,11 @@
-import { createContext, useContext } from "react"
+import { Dispatch, SetStateAction, createContext } from "react"
 import { Mesh, MeshStandardMaterial, Texture } from "three"
-import { AssetsContext } from "./Assets"
-import { ControlsContext } from "./Controls";
 
 export class Editor {
-    private selectedMesh: Mesh = null!
-    private pointedMesh: Mesh = null!
+    private selectedMesh: Mesh = null
+    private pointedMesh: Mesh = null
+
+    setActiveMenu: Dispatch<SetStateAction<string>>
 
     onPointerOnMesh(mesh: Mesh) {
         if (this.pointedMesh !== mesh) {
@@ -20,7 +20,9 @@ export class Editor {
     }
 
     onClickMesh(mesh: Mesh): void {
-        this.setSelectedMesh(this.selectedMesh == mesh ? null : mesh)
+        this.setSelectedMesh(mesh)
+        if (this.setActiveMenu)
+            this.setActiveMenu('TextureMenu')
     }
 
     flashSelectedMesh(elapsedTime: number): void {

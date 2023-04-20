@@ -1,13 +1,18 @@
 import { CSSProperties, useContext, useRef } from "react"
 import styles from '../styles/Home.module.css';
 import { ControlsContext } from "../contexts/Controls";
+import { GuiContext } from "./Gui";
 
 export function SplashScreen() {
+  const gui = useContext(GuiContext)
+  if (gui.activeMenu != 'SplashScreen')
+    return <></>
+
   const controls = useContext(ControlsContext)
   let self = useRef<HTMLDivElement>(null!)
   let style = { position: 'absolute', left: 0, top: 0, width: '100%' } as CSSProperties
   function onStartClick() {
-    self.current.remove()
+    gui.setActiveMenu('')
     controls.setEnabled(true)
   }
   return (

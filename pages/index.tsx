@@ -3,12 +3,11 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, Plane } from '@react-three/drei'
 import Head from 'next/head';
 import { BufferAttribute, Mesh } from 'three';
-import { SplashScreen } from '../components/SplashScreen';
 import { Assets, AssetsContext } from '../contexts/Assets';
 import { Editor, EditorContext } from '../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
-import { TextureMenu } from '../components/TextureMenu';
 import { Controls, ControlsContext } from '../contexts/Controls';
+import { Gui } from '../components/Gui';
 
 function Surface({
   name = '',
@@ -32,7 +31,7 @@ function Surface({
   const texture = image == '' ? null : assets.getTexture(image)
   function onClick() {
     editor.onClickMesh(mesh.current)
-    controls.setEnabled(!editor.isMeshSelected())
+    controls.setEnabled(false)
   }
   return (
     <Plane name={name} ref={mesh} position={position} rotation={rotation}
@@ -117,8 +116,7 @@ export default function ThreePlace() {
               />
               <Scene />
             </Canvas>
-            <SplashScreen />
-            <TextureMenu />
+            <Gui firstMenu="SplashScreen" />
           </EditorContext.Provider>
         </ControlsContext.Provider>
       </AssetsContext.Provider >
