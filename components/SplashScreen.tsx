@@ -1,14 +1,14 @@
-import { CSSProperties, forwardRef, MouseEventHandler, useContext, useRef } from "react"
+import { CSSProperties, useContext, useRef } from "react"
 import styles from '../styles/Home.module.css';
-import { AppContext } from "../contexts/App";
+import { ControlsContext } from "../contexts/Controls";
 
 export function SplashScreen() {
-  let app = useContext(AppContext)
+  const controls = useContext(ControlsContext)
   let self = useRef<HTMLDivElement>(null!)
   let style = { position: 'absolute', left: 0, top: 0, width: '100%' } as CSSProperties
   function onStartClick() {
     self.current.remove()
-    app.setControlsEnabled(true)
+    controls.setEnabled(true)
   }
   return (
     <div ref={self} className={styles.container} style={style}>

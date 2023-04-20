@@ -1,6 +1,8 @@
-import { useContext, useRef, CSSProperties, useState } from "react"
-import { AppContext } from "../contexts/App"
+import { useContext, useRef, CSSProperties } from "react"
 import Image from "next/image"
+import { EditorContext } from "../contexts/Editor"
+import { ControlsContext } from "../contexts/Controls"
+import { AssetsContext } from "../contexts/Assets"
 
 const AllTextures = [
     '/basket.png',
@@ -26,13 +28,16 @@ const AllTextures = [
 ]
 
 export function TextureMenu() {
-    let app = useContext(AppContext)
+    const editor = useContext(EditorContext)
+    const controls = useContext(ControlsContext)
+    const assets = useContext(AssetsContext)
     let self = useRef<HTMLDivElement>(null!)
     let style = { position: 'absolute', left: 0, top: 0, height: 'auto' } as CSSProperties
     function onTextureClick(image: string) {
-        app.setSelectedMeshTexture(image)
-        app.setSelectedMesh(null)
-        app.setControlsEnabled(true)
+        const texture = assets.getTexture(image)
+        editor.setSelectedMeshTexture(texture)
+        editor.setSelectedMesh(null)
+        controls.setEnabled(true)
         // self.current.remove()
     }
     // if (!app.isMeshSelected()) {

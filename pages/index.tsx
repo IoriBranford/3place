@@ -1,12 +1,14 @@
-import React, { MutableRefObject, useRef, useLayoutEffect, useContext } from 'react'
-import { Canvas, ThreeEvent, useFrame } from '@react-three/fiber'
+import React, { useRef, useLayoutEffect, useContext } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, Plane } from '@react-three/drei'
 import Head from 'next/head';
 import { BufferAttribute, Mesh } from 'three';
 import { SplashScreen } from '../components/SplashScreen';
-import { App, AppContext } from '../contexts/App';
+import { Assets, AssetsContext } from '../contexts/Assets';
+import { Editor, EditorContext } from '../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 import { TextureMenu } from '../components/TextureMenu';
+import { Controls, ControlsContext } from '../contexts/Controls';
 
 function Surface({
   name = '',
@@ -17,7 +19,9 @@ function Surface({
   image = '',
 }) {
   const mesh = useRef<Mesh>(null!)
-  const app = useContext(AppContext)
+  const editor = useContext(EditorContext)
+  const assets = useContext(AssetsContext)
+  const controls = useContext(ControlsContext)
   useLayoutEffect(() => {
     const uv = mesh.current.geometry.getAttribute('uv') as BufferAttribute
     uv.setXY(0, 0, height)
@@ -25,10 +29,14 @@ function Surface({
     uv.setXY(2, 0, 0)
     uv.setXY(3, width, 0)
   })
-  const texture = image == '' ? null : app.getTexture(image)
+  const texture = image == '' ? null : assets.getTexture(image)
+  function onClick() {
+    editor.onClickMesh(mesh.current)
+    controls.setEnabled(!editor.isMeshSelected())
+  }
   return (
     <Plane name={name} ref={mesh} position={position} rotation={rotation}
-      onClick={() => { app.onClickMesh(mesh.current) }} args={[width, height]}>
+      onClick={onClick} args={[width, height]}>
       <meshStandardMaterial map={texture} />
     </Plane>
   )
@@ -61,47 +69,11 @@ function Room() {
 }
 
 export function Scene() {
-  let context = useContext(AppContext)
-  let pointedObject: MutableRefObject<Mesh> = null!
-  // const textureSelector = useRef<Group>(null!)
-
-  function onClickTexture(event: ThreeEvent<MouseEvent>) {
-    event.stopPropagation()
-    // clickedObject = null
-    // textureSelector.current.visible = false
-    // controlsRef.current.enabled = true
-  }
-
-  const onPointerOverSurface = (mesh: MutableRefObject<Mesh>) => {
-    if (pointedObject !== mesh) {
-      pointedObject = mesh
-    }
-  }
-
-  const onPointerOutSurface = (mesh: MutableRefObject<Mesh>) => {
-    if (pointedObject === mesh) {
-      pointedObject = null
-    }
-  }
+  const editor = useContext(EditorContext)
 
   useFrame((state, delta) => {
-    context.flashSelectedMesh(state.clock.elapsedTime)
+    editor.flashSelectedMesh(state.clock.elapsedTime)
   })
-
-  // const depth = 1/8
-  // const scale = new Vector3(1/32, 1/32, 1)
-  // function TextureSelector() {
-  //   return (
-  //     <ScreenSpace ref={textureSelector} depth={depth} scale={scale} visible={false}>
-  //       <sprite position={[6, 0, 0]} onClick={onClickTexture}>
-  //         <spriteMaterial map={surfaceTextures['floor']}/>
-  //       </sprite>
-  //       <sprite position={[6, 1, 0]} onClick={onClickTexture}>
-  //         <spriteMaterial map={surfaceTextures['wallX0']}/>
-  //       </sprite>
-  //     </ScreenSpace>
-  //   )
-  // }
 
   return (
     <Room />
@@ -110,7 +82,9 @@ export function Scene() {
 
 export default function ThreePlace() {
   const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
-  const app = new App(firstPersonControls)
+  const assets = new Assets()
+  const editor = new Editor()
+  const controls = new Controls(firstPersonControls)
   return (
     <>
       <Head>
@@ -129,21 +103,25 @@ export default function ThreePlace() {
                 }
             `}
       </style>
-      <AppContext.Provider value={app}>
-        <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-          camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
-          <FirstPersonControls ref={firstPersonControls}
-            enabled={false}
-            movementSpeed={0} lookSpeed={.25}
-            constrainVertical={true}
-            verticalMin={Math.PI / 4}
-            verticalMax={Math.PI * 3 / 4}
-          />
-          <Scene />
-        </Canvas>
-        <SplashScreen />
-        <TextureMenu />
-      </AppContext.Provider>
+      <AssetsContext.Provider value={assets}>
+        <ControlsContext.Provider value={controls}>
+          <EditorContext.Provider value={editor}>
+            <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
+              camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
+              <FirstPersonControls ref={firstPersonControls}
+                enabled={false}
+                movementSpeed={0} lookSpeed={.25}
+                constrainVertical={true}
+                verticalMin={Math.PI / 4}
+                verticalMax={Math.PI * 3 / 4}
+              />
+              <Scene />
+            </Canvas>
+            <SplashScreen />
+            <TextureMenu />
+          </EditorContext.Provider>
+        </ControlsContext.Provider>
+      </AssetsContext.Provider >
     </>
   )
 }
