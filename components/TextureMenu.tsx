@@ -30,14 +30,14 @@ const AllTextures = [
 
 export function TextureMenu() {
     const gui = useContext(GuiContext)
-    if (gui.activeMenu != 'TextureMenu') {
-        return <></>
-    }
     const editor = useContext(EditorContext)
     const controls = useContext(ControlsContext)
     const assets = useContext(AssetsContext)
-    let self = useRef<HTMLDivElement>(null!)
-    let style = { position: 'absolute', left: 0, top: 0, height: 'auto' } as CSSProperties
+    const self = useRef<HTMLDivElement>(null!)
+    if (gui.activeMenu != 'TextureMenu') {
+        return <></>
+    }
+    const style = { position: 'absolute', left: 0, top: 0, height: 'auto' } as CSSProperties
     function onTextureClick(image: string) {
         const texture = assets.getTexture(image)
         editor.setSelectedMeshTexture(texture)
@@ -51,7 +51,7 @@ export function TextureMenu() {
         <div ref={self} style={style}>
             {
                 AllTextures.map((image) => (
-                    <Image src={image} alt={image} width={64} height={64} onClick={() => onTextureClick(image)} />
+                    <Image key={image} src={image} alt={image} width={64} height={64} onClick={() => onTextureClick(image)} />
                 ))
             }
             <br/>

@@ -5,11 +5,11 @@ import { GuiContext } from "./Gui";
 
 export function SplashScreen() {
   const gui = useContext(GuiContext)
+  const controls = useContext(ControlsContext)
+  const self = useRef<HTMLDivElement>(null!)
   if (gui.activeMenu != 'SplashScreen')
     return <></>
 
-  const controls = useContext(ControlsContext)
-  let self = useRef<HTMLDivElement>(null!)
   let style = { position: 'absolute', left: 0, top: 0, width: '100%' } as CSSProperties
   function onStartClick() {
     gui.setActiveMenu('')
