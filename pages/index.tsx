@@ -6,7 +6,6 @@ import { BufferAttribute, Mesh } from 'three';
 import { Assets, AssetsContext } from '../contexts/Assets';
 import { Editor, EditorContext } from '../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
-import { Controls, ControlsContext } from '../contexts/Controls';
 import { Gui } from '../components/Gui';
 
 function Surface({
@@ -20,7 +19,6 @@ function Surface({
   const mesh = useRef<Mesh>(null!)
   const editor = useContext(EditorContext)
   const assets = useContext(AssetsContext)
-  const controls = useContext(ControlsContext)
   useLayoutEffect(() => {
     const uv = mesh.current.geometry.getAttribute('uv') as BufferAttribute
     uv.setXY(0, 0, height)
@@ -31,7 +29,6 @@ function Surface({
   const texture = image == '' ? null : assets.getTexture(image)
   function onClick() {
     editor.onClickMesh(mesh.current)
-    controls.setEnabled(false)
   }
   return (
     <Plane name={name} ref={mesh} position={position} rotation={rotation}
@@ -83,7 +80,6 @@ export default function ThreePlace() {
   const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
   const assets = new Assets()
   const editor = new Editor()
-  const controls = new Controls(firstPersonControls)
   return (
     <>
       <Head>
@@ -103,22 +99,29 @@ export default function ThreePlace() {
             `}
       </style>
       <AssetsContext.Provider value={assets}>
-        <ControlsContext.Provider value={controls}>
-          <EditorContext.Provider value={editor}>
-            <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-              camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
-              <FirstPersonControls ref={firstPersonControls}
-                enabled={false}
-                movementSpeed={0} lookSpeed={.25}
-                constrainVertical={true}
-                verticalMin={Math.PI / 4}
-                verticalMax={Math.PI * 3 / 4}
-              />
-              <Scene />
-            </Canvas>
-            <Gui firstMenu="SplashScreen" />
-          </EditorContext.Provider>
-        </ControlsContext.Provider>
+        <EditorContext.Provider value={editor}>
+          <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
+            camera={{ position: [0, 0, 0], up: [0, 1, 0] }}
+            onPointerDown={(event) => {
+              if (event.button == 2)
+                firstPersonControls.current.enabled = true
+            }}
+            onPointerUp={(event) => {
+              if (event.button == 2)
+                firstPersonControls.current.enabled = false
+            }}
+          >
+            <FirstPersonControls ref={firstPersonControls}
+              enabled={false}
+              movementSpeed={0} lookSpeed={.25}
+              constrainVertical={true}
+              verticalMin={Math.PI / 4}
+              verticalMax={Math.PI * 3 / 4}
+            />
+            <Scene />
+          </Canvas>
+          <Gui firstMenu="SplashScreen" />
+        </EditorContext.Provider>
       </AssetsContext.Provider >
     </>
   )
