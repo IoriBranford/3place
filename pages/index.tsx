@@ -102,12 +102,30 @@ export default function ThreePlace() {
         <EditorContext.Provider value={editor}>
           <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
             camera={{ position: [0, 0, 0], up: [0, 1, 0] }}
-            onPointerDown={(event) => {
+            onMouseDown={(event) => {
               if (event.button == 2)
                 firstPersonControls.current.enabled = true
             }}
-            onPointerUp={(event) => {
+            onMouseUp={(event) => {
               if (event.button == 2)
+                firstPersonControls.current.enabled = false
+            }}
+            onTouchStart={(event) => {
+              if (event.touches.length > 0)
+                firstPersonControls.current.enabled = true
+            }}
+            onTouchMove={(event) => {
+              let touch = event.changedTouches[0]
+              let mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                screenX: touch.screenX,
+                screenY: touch.screenY,
+              })
+              firstPersonControls.current.dispatchEvent(mouseEvent)
+            }}
+            onTouchEnd={(event) => {
+              if (event.touches.length < 1)
                 firstPersonControls.current.enabled = false
             }}
           >
