@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, createContext, useContext, useState } from "react"
 import { EditorContext } from "../contexts/Editor"
 import { TextureMenu } from "./TextureMenu"
+import AuthScreen from "./AuthScreen"
 
 export interface GuiState {
     activeMenu: string
@@ -18,6 +19,7 @@ export function Gui({ firstMenu = '' }) {
 
     return (
         <GuiContext.Provider value={guiState}>
+            <AuthScreen />
             <TextureMenu />
         </GuiContext.Provider>
     )
