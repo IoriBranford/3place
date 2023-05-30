@@ -3,8 +3,8 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls, Plane } from '@react-three/drei'
 import Head from 'next/head';
 import { BufferAttribute, Mesh } from 'three';
-import { Assets, AssetsContext } from '../contexts/Assets';
-import { Editor, EditorContext } from '../contexts/Editor';
+import { AssetsContext } from '../contexts/Assets';
+import { EditorContext } from '../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 import { Gui } from '../components/Gui';
 
@@ -78,8 +78,6 @@ export function Scene() {
 
 export default function ThreePlace() {
   const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
-  const assets = new Assets()
-  const editor = new Editor()
   return (
     <>
       <Head>
@@ -98,49 +96,45 @@ export default function ThreePlace() {
                 }
             `}
       </style>
-      <AssetsContext.Provider value={assets}>
-        <EditorContext.Provider value={editor}>
-          <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-            camera={{ position: [0, 0, 0], up: [0, 1, 0] }}
-            onMouseDown={(event) => {
-              if (event.button == 2)
-                firstPersonControls.current.enabled = true
-            }}
-            onMouseUp={(event) => {
-              if (event.button == 2)
-                firstPersonControls.current.enabled = false
-            }}
-            onTouchStart={(event) => {
-              if (event.touches.length > 0)
-                firstPersonControls.current.enabled = true
-            }}
-            onTouchMove={(event) => {
-              let touch = event.changedTouches[0]
-              let mouseEvent = new MouseEvent("mousemove", {
-                clientX: touch.clientX,
-                clientY: touch.clientY,
-                screenX: touch.screenX,
-                screenY: touch.screenY,
-              })
-              firstPersonControls.current.dispatchEvent(mouseEvent)
-            }}
-            onTouchEnd={(event) => {
-              if (event.touches.length < 1)
-                firstPersonControls.current.enabled = false
-            }}
-          >
-            <FirstPersonControls ref={firstPersonControls}
-              enabled={false}
-              movementSpeed={0} lookSpeed={.25}
-              constrainVertical={true}
-              verticalMin={Math.PI / 4}
-              verticalMax={Math.PI * 3 / 4}
-            />
-            <Scene />
-          </Canvas>
-          <Gui firstMenu="SplashScreen" />
-        </EditorContext.Provider>
-      </AssetsContext.Provider >
+      <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
+        camera={{ position: [0, 0, 0], up: [0, 1, 0] }}
+        onMouseDown={(event) => {
+          if (event.button == 2)
+            firstPersonControls.current.enabled = true
+        }}
+        onMouseUp={(event) => {
+          if (event.button == 2)
+            firstPersonControls.current.enabled = false
+        }}
+        onTouchStart={(event) => {
+          if (event.touches.length > 0)
+            firstPersonControls.current.enabled = true
+        }}
+        onTouchMove={(event) => {
+          let touch = event.changedTouches[0]
+          let mouseEvent = new MouseEvent("mousemove", {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            screenX: touch.screenX,
+            screenY: touch.screenY,
+          })
+          firstPersonControls.current.dispatchEvent(mouseEvent)
+        }}
+        onTouchEnd={(event) => {
+          if (event.touches.length < 1)
+            firstPersonControls.current.enabled = false
+        }}
+      >
+        <FirstPersonControls ref={firstPersonControls}
+          enabled={false}
+          movementSpeed={0} lookSpeed={.25}
+          constrainVertical={true}
+          verticalMin={Math.PI / 4}
+          verticalMax={Math.PI * 3 / 4}
+        />
+        <Scene />
+      </Canvas>
+      <Gui firstMenu="SplashScreen" />
     </>
   )
 }
