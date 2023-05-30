@@ -1,19 +1,14 @@
-import { CSSProperties, useContext, useRef } from "react"
+import { CSSProperties } from "react"
 import styles from '../styles/Home.module.css';
-import { GuiContext } from "./Gui";
+import Link from "next/link";
 
 export function SplashScreen() {
-  const gui = useContext(GuiContext)
-  const self = useRef<HTMLDivElement>(null!)
-  if (gui.activeMenu != 'SplashScreen')
-    return <></>
-
   let style = { position: 'absolute', left: 0, top: 0, width: '100%' } as CSSProperties
-  function onStartClick() {
-    gui.setActiveMenu('')
-  }
+
+  let roomUrl = '/room/default' // if logged in, get user's start room
+
   return (
-    <div ref={self} className={styles.container} style={style}>
+    <div className={styles.container} style={style}>
 
       <main>
         <h1 className={styles.title}>
@@ -25,8 +20,8 @@ export function SplashScreen() {
         </p>
 
         <div className={styles.grid}>
-          <div className={styles.card} onClick={onStartClick}>
-            <p>ENTER</p>
+          <div className={styles.card}>
+            <Link href={roomUrl}>ENTER</Link>
           </div>
         </div>
       </main>

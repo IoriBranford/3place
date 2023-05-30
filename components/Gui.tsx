@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, createContext, useContext, useState } from "react"
 import { EditorContext } from "../contexts/Editor"
-import { SplashScreen } from "./SplashScreen"
 import { TextureMenu } from "./TextureMenu"
 
 export interface GuiState {
@@ -19,7 +18,6 @@ export function Gui({ firstMenu = '' }) {
 
     return (
         <GuiContext.Provider value={guiState}>
-            <SplashScreen />
             <TextureMenu />
         </GuiContext.Provider>
     )

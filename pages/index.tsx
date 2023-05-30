@@ -1,12 +1,10 @@
 import React, { useRef, useLayoutEffect, useContext } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { FirstPersonControls, Plane } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import { Plane } from '@react-three/drei'
 import Head from 'next/head';
 import { BufferAttribute, Mesh } from 'three';
 import { AssetsContext } from '../contexts/Assets';
-import { EditorContext } from '../contexts/Editor';
-import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
-import { Gui } from '../components/Gui';
+import { SplashScreen } from '../components/SplashScreen';
 
 function Surface({
   name = '',
@@ -17,7 +15,6 @@ function Surface({
   image = '',
 }) {
   const mesh = useRef<Mesh>(null!)
-  const editor = useContext(EditorContext)
   const assets = useContext(AssetsContext)
   useLayoutEffect(() => {
     const uv = mesh.current.geometry.getAttribute('uv') as BufferAttribute
@@ -27,12 +24,9 @@ function Surface({
     uv.setXY(3, width, 0)
   })
   const texture = image == '' ? null : assets.getTexture(image)
-  function onClick() {
-    editor.onClickMesh(mesh.current)
-  }
   return (
     <Plane name={name} ref={mesh} position={position} rotation={rotation}
-      onClick={onClick} args={[width, height]}>
+      args={[width, height]}>
       <meshStandardMaterial map={texture} />
     </Plane>
   )
@@ -64,20 +58,7 @@ function Room() {
   </>
 }
 
-export function Scene() {
-  const editor = useContext(EditorContext)
-
-  useFrame((state, delta) => {
-    editor.flashSelectedMesh(state.clock.elapsedTime)
-  })
-
-  return (
-    <Room />
-  )
-}
-
 export default function ThreePlace() {
-  const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
   return (
     <>
       <Head>
@@ -97,44 +78,10 @@ export default function ThreePlace() {
             `}
       </style>
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-        camera={{ position: [0, 0, 0], up: [0, 1, 0] }}
-        onMouseDown={(event) => {
-          if (event.button == 2)
-            firstPersonControls.current.enabled = true
-        }}
-        onMouseUp={(event) => {
-          if (event.button == 2)
-            firstPersonControls.current.enabled = false
-        }}
-        onTouchStart={(event) => {
-          if (event.touches.length > 0)
-            firstPersonControls.current.enabled = true
-        }}
-        onTouchMove={(event) => {
-          let touch = event.changedTouches[0]
-          let mouseEvent = new MouseEvent("mousemove", {
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            screenX: touch.screenX,
-            screenY: touch.screenY,
-          })
-          firstPersonControls.current.dispatchEvent(mouseEvent)
-        }}
-        onTouchEnd={(event) => {
-          if (event.touches.length < 1)
-            firstPersonControls.current.enabled = false
-        }}
-      >
-        <FirstPersonControls ref={firstPersonControls}
-          enabled={false}
-          movementSpeed={0} lookSpeed={.25}
-          constrainVertical={true}
-          verticalMin={Math.PI / 4}
-          verticalMax={Math.PI * 3 / 4}
-        />
-        <Scene />
+        camera={{ position: [0, 0, 0], up: [0, 1, 0] }}>
+        <Room />
       </Canvas>
-      <Gui firstMenu="SplashScreen" />
+      <SplashScreen/>
     </>
   )
 }
