@@ -1,12 +1,12 @@
-import { Dispatch, SetStateAction, createContext } from "react"
+import { createContext } from "react"
 import { Mesh, MeshStandardMaterial, Texture } from "three"
 import { GuiState } from "../components/Gui"
 
 export class Editor {
-    private selectedMesh: Mesh = null
-    private pointedMesh: Mesh = null
+    private selectedMesh: Mesh = null!
+    private pointedMesh: Mesh = null!
 
-    guiState: GuiState = null
+    guiState: GuiState = null!
 
     onPointerOnMesh(mesh: Mesh) {
         if (this.pointedMesh !== mesh) {
@@ -16,7 +16,7 @@ export class Editor {
 
     onPointerOffMesh(mesh: Mesh) {
         if (this.pointedMesh === mesh) {
-            this.pointedMesh = null
+            this.pointedMesh = null!
         }
     }
 

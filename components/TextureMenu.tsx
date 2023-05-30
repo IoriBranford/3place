@@ -41,7 +41,7 @@ export function TextureMenu() {
         editor.setSelectedMeshTexture(texture)
     }
     function onCloseClick() {
-        editor.setSelectedMesh(null)
+        editor.setSelectedMesh(null!)
         gui.setActiveMenu('')
     }
     return (
