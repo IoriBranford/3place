@@ -20,9 +20,11 @@ export function SplashScreen() {
         </p>
 
         <div className={styles.grid}>
-          <div className={styles.card}>
-            <Link href={roomUrl}>ENTER</Link>
-          </div>
+          <Link href={roomUrl}>
+            <div className={styles.card}>
+              ENTER
+            </div>
+          </Link>
         </div>
       </main>
 
