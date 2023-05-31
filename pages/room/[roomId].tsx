@@ -86,10 +86,12 @@ export default function RoomPage() {
                         firstPersonControls.current.enabled = false
                 }}
                 onTouchStart={(event) => {
+                    event.preventDefault()
                     if (event.touches.length > 0)
                         firstPersonControls.current.enabled = true
                 }}
                 onTouchMove={(event) => {
+                    event.preventDefault()
                     let touch = event.changedTouches[0]
                     let mouseEvent = new MouseEvent("mousemove", {
                         clientX: touch.clientX,
@@ -100,6 +102,7 @@ export default function RoomPage() {
                     firstPersonControls.current.dispatchEvent(mouseEvent)
                 }}
                 onTouchEnd={(event) => {
+                    event.preventDefault()
                     if (event.touches.length < 1)
                         firstPersonControls.current.enabled = false
                 }}
