@@ -8,7 +8,7 @@ export interface GuiState {
     setActiveMenu: Dispatch<SetStateAction<string>>
 }
 
-export const GuiContext = createContext(null as GuiState)
+export const GuiContext = createContext<GuiState>(null!)
 
 export function Gui({ firstMenu = '' }) {
     const [activeMenu, setActiveMenu] = useState(firstMenu)
