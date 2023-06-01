@@ -4,6 +4,13 @@ import { SplashScreen } from '../components/SplashScreen';
 import RectangleRoom from '../components3D/RectangleRoom';
 
 function Scene() {
+  useFrame((state) => {
+    const angle = state.clock.elapsedTime*Math.PI/30
+    const x = Math.cos(angle)
+    const z = Math.sin(angle)
+    state.camera.lookAt(x, state.camera.position.y, z)
+  })
+
   return <RectangleRoom
     height={2}
     width={5}
