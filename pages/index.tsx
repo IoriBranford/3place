@@ -4,11 +4,8 @@ import { SplashScreen } from '../components/SplashScreen';
 import RectangleRoom from '../components3D/RectangleRoom';
 
 function Scene() {
-  useFrame((state) => {
-    const angle = state.clock.elapsedTime*Math.PI/30
-    const x = Math.cos(angle)
-    const z = Math.sin(angle)
-    state.camera.lookAt(x, state.camera.position.y, z)
+  useFrame((state, delta) => {
+    state.camera.rotateY(delta*Math.PI/30)
   })
 
   return <RectangleRoom
@@ -39,7 +36,7 @@ export default function ThreePlace() {
             `}
       </style>
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-        camera={{ position: [0, 0.5, 0], up: [0, 1, 0] }}>
+        camera={{ position: [0, 0.5, 0], rotation: [0, -Math.PI / 2, 0] }}>
         <Scene />
       </Canvas>
       <SplashScreen />

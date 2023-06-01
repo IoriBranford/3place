@@ -82,7 +82,7 @@ export function Scene({ roomData = null }) {
             width={5}
             wallImage={'/bricks.png'}
             floorImage={'/wood.png'}
-            ceilingImage={'/wood.png'}/>
+            ceilingImage={'/wood.png'} />
     }
     return room
 }
@@ -118,7 +118,7 @@ export default function RoomPage() {
             `}
             </style>
             <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-                camera={{ position: [0, .5, 0], up: [0, 1, 0] }}
+                camera={{ position: [0, .5, 0], rotation: [0, -Math.PI / 2, 0] }}
                 onMouseDown={(event) => {
                     if (event.button == 2)
                         firstPersonControls.current.enabled = true
@@ -153,7 +153,7 @@ export default function RoomPage() {
                     verticalMin={Math.PI / 4}
                     verticalMax={Math.PI * 3 / 4}
                 />
-                <Scene roomData={roomData}/>
+                <Scene roomData={roomData} />
             </Canvas>
             <Gui firstMenu="" />
         </>
