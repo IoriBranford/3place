@@ -38,10 +38,10 @@ export function TextureMenu() {
     const style = { position: 'absolute', left: 0, top: 0, height: 'auto' } as CSSProperties
     function onTextureClick(image: string) {
         const texture = assets.getTexture(image)
-        editor.setSelectedMeshTexture(texture)
+        editor.setSelectedObjectTexture(texture)
     }
     function onCloseClick() {
-        editor.setSelectedMesh(null!)
+        editor.setSelectedObject(null!)
         gui.setActiveMenu('')
     }
     return (

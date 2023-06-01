@@ -8,6 +8,7 @@ import { AssetsContext } from '../../contexts/Assets';
 import { EditorContext } from '../../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 import { Gui } from '../../components/Gui';
+import RectangleRoom from "../../components3D/RectangleRoom";
 
 function Surface({
     name = '',
@@ -69,14 +70,19 @@ export function Scene({ roomData = null }) {
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
-        editor.flashSelectedMesh(state.clock.elapsedTime)
+        editor.flashSelectedObject(state.clock.elapsedTime)
     })
 
     let room
     if (roomData) {
         // load it into object3d
     } else {
-        room = <DefaultRoom/>
+        room = <RectangleRoom
+            height={2}
+            width={5}
+            wallImage={'/bricks.png'}
+            floorImage={'/wood.png'}
+            ceilingImage={'/wood.png'}/>
     }
     return room
 }
@@ -112,7 +118,7 @@ export default function RoomPage() {
             `}
             </style>
             <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
-                camera={{ position: [0, 0, 0], up: [0, 1, 0] }}
+                camera={{ position: [0, .5, 0], up: [0, 1, 0] }}
                 onMouseDown={(event) => {
                     if (event.button == 2)
                         firstPersonControls.current.enabled = true
