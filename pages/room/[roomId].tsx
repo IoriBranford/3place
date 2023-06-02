@@ -6,45 +6,39 @@ import Head from 'next/head';
 import { EditorContext } from '../../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 import { Gui } from '../../components/Gui';
-import RectangleRoom from "../../components3D/RectangleRoom";
+import RectangleRoom, { RectangleRoomProps } from "../../components3D/RectangleRoom";
 
-export function Scene({ roomData = null }) {
+function Scene(props: RectangleRoomProps) {
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
         editor.flashSelectedObject(state.clock.elapsedTime)
     })
-
-    let room
-    if (roomData) {
-        // load it into object3d
-    } else {
-        room = <RectangleRoom
-            height={2}
-            width={5}
-            wallImage={'/bricks.png'}
-            floorImage={'/wood.png'}
-            ceilingImage={'/wood.png'} />
-    }
-    return room
+    
+    return <RectangleRoom {...props} />
 }
 
 export default function RoomPage() {
     const router = useRouter();
     const roomId = router.query.roomId;
 
-    const roomData = null // query db with roomId for room data
+    let roomProps = {
+        name: 'New room',
+        height: 2,
+        width: 4,
+        wallImage: '/bricks.png',
+        floorImage: '/wood.png',
+        ceilingImage: '/wood.png'
+    }
 
-    // if room found, load it as object3d
-    // else, load default room
-
-    const roomName = 'Start Room'
+    // query db for room info by roomId
+    // if found replace props values
 
     const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
     return (
         <>
             <Head>
-                <title>{roomName}</title>
+                <title>{roomProps.name}</title>
                 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png"></link>
             </Head>
             <style jsx global>{`
@@ -95,7 +89,7 @@ export default function RoomPage() {
                     verticalMin={Math.PI / 4}
                     verticalMax={Math.PI * 3 / 4}
                 />
-                <Scene roomData={roomData} />
+                <Scene {...roomProps}/>
             </Canvas>
             <Gui firstMenu="" />
         </>
