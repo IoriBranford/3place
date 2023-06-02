@@ -5,7 +5,7 @@ import { EditorContext } from "../contexts/Editor"
 import { Plane } from "@react-three/drei"
 import RoomObject from "./RoomObject"
 
-export interface RectangleRoomProps {
+export interface SquareRoomProps {
     name: string
     width: number
     height: number
@@ -28,7 +28,7 @@ function SurfaceMaterial({ image = '' }) {
     return <meshStandardMaterial map={texture} />
 }
 
-export default function RectangleRoom({ width = 4, height = 1, wallImage = '', floorImage = '', ceilingImage = '' }: RectangleRoomProps) {
+export default function SquareRoom({ width = 4, height = 1, wallImage = '', floorImage = '', ceilingImage = '' }: SquareRoomProps) {
     const wallsRef = useRef<Object3D>(null!)
     const floorRef = useRef<Mesh>(null!)
     const ceilingRef = useRef<Mesh>(null!)

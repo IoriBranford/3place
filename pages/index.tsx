@@ -1,14 +1,14 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import Head from 'next/head';
 import { SplashScreen } from '../components/SplashScreen';
-import RectangleRoom from '../components3D/RectangleRoom';
+import SquareRoom from '../components3D/SquareRoom';
 
 function Scene() {
   useFrame((state, delta) => {
     state.camera.rotateY(delta*Math.PI/30)
   })
 
-  return <RectangleRoom
+  return <SquareRoom
     name={''}
     height={2}
     width={5}

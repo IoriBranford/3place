@@ -6,16 +6,16 @@ import Head from 'next/head';
 import { EditorContext } from '../../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 import { Gui } from '../../components/Gui';
-import RectangleRoom, { RectangleRoomProps } from "../../components3D/RectangleRoom";
+import SquareRoom, { SquareRoomProps } from "../../components3D/SquareRoom";
 
-function Scene(props: RectangleRoomProps) {
+function Scene(props: SquareRoomProps) {
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
         editor.flashSelectedObject(state.clock.elapsedTime)
     })
     
-    return <RectangleRoom {...props} />
+    return <SquareRoom {...props} />
 }
 
 export default function RoomPage() {
