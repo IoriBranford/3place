@@ -3,7 +3,6 @@ import { BufferAttribute, Mesh, Object3D } from "three"
 import { AssetsContext } from "../contexts/Assets"
 import { EditorContext } from "../contexts/Editor"
 import { Plane } from "@react-three/drei"
-import RoomObject from "./RoomObject"
 
 export interface SquareRoomProps {
     name: string
@@ -46,25 +45,6 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
     const wallMaterial = <SurfaceMaterial image={wallImage} />
     const floorMaterial = <SurfaceMaterial image={floorImage} />
     const ceilingMaterial = <SurfaceMaterial image={ceilingImage} />
-
-    const objects = [
-        {
-            model: '/pottedPlant.glb',
-            position: [width/2 - .5, 0, width/2 - .5]
-        },
-        {
-            model: '/lampRoundFloor.glb',
-            position: [-(width/2 - .5), 0, width/2 - .5]
-        },
-        {
-            model: '/loungeChair.glb',
-            position: [width/2 - .5, 0, -(width/2 - .5)]
-        },
-        {
-            model: '/desk.glb',
-            position: [-(width/2 - .5), 0, -(width/2 - .5)]
-        },
-    ]
 
     function onClick(object: Object3D) {
         editor.onClickObject(object)
@@ -125,7 +105,5 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             </Plane>
 
         </object3D>
-
-        {objects.map(object => <RoomObject {...object} />)}
     </>
 }

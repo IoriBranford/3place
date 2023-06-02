@@ -7,15 +7,19 @@ import { EditorContext } from '../../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
 import { Gui } from '../../components/Gui';
 import SquareRoom, { SquareRoomProps } from "../../components3D/SquareRoom";
+import RoomObject, { RoomObjectProps } from "../../components3D/RoomObject";
 
-function Scene(props: SquareRoomProps) {
+function Scene({ roomProps, objects }: { roomProps: SquareRoomProps, objects?: RoomObjectProps[] }) {
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
         editor.flashSelectedObject(state.clock.elapsedTime)
     })
-    
-    return <SquareRoom {...props} />
+
+    return <>
+        <SquareRoom {...roomProps} />
+        {objects?.map(object => <RoomObject {...object} />)}
+    </>
 }
 
 export default function RoomPage() {
@@ -28,8 +32,26 @@ export default function RoomPage() {
         width: 4,
         wallImage: '/bricks.png',
         floorImage: '/wood.png',
-        ceilingImage: '/wood.png'
+        ceilingImage: '/wood.png',
     }
+    let objects = [
+        {
+            model: '/pottedPlant.glb',
+            position: [1.5, 0, 1.5]
+        },
+        {
+            model: '/lampRoundFloor.glb',
+            position: [-1.5, 0, 1.5]
+        },
+        {
+            model: '/loungeChair.glb',
+            position: [1.5, 0, -1.5]
+        },
+        {
+            model: '/desk.glb',
+            position: [-1.5, 0, -1.5]
+        },
+    ]
 
     // query db for room info by roomId
     // if found replace props values
@@ -89,7 +111,7 @@ export default function RoomPage() {
                     verticalMin={Math.PI / 4}
                     verticalMax={Math.PI * 3 / 4}
                 />
-                <Scene {...roomProps}/>
+                <Scene roomProps={roomProps} objects={objects} />
             </Canvas>
             <Gui firstMenu="" />
         </>
