@@ -4,6 +4,15 @@ import { AssetsContext } from "../contexts/Assets"
 import { EditorContext } from "../contexts/Editor"
 import { Plane } from "@react-three/drei"
 
+export interface RectangleRoomProps {
+    name: string
+    width: number
+    height: number
+    wallImage: string
+    floorImage: string
+    ceilingImage: string
+}
+
 function setUVs(plane: Mesh, width: number, height: number) {
     const uv = plane.geometry.getAttribute('uv') as BufferAttribute
     uv.setXY(0, 0, height)
@@ -18,7 +27,7 @@ function SurfaceMaterial({ image = '' }) {
     return <meshStandardMaterial map={texture} />
 }
 
-export default function RectangleRoom({ width = 4, height = 1, wallImage = '', floorImage = '', ceilingImage = '' }) {
+export default function RectangleRoom({ width = 4, height = 1, wallImage = '', floorImage = '', ceilingImage = '' }: RectangleRoomProps) {
     const wallsRef = useRef<Object3D>(null!)
     const floorRef = useRef<Mesh>(null!)
     const ceilingRef = useRef<Mesh>(null!)
