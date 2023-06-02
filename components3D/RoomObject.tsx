@@ -1,6 +1,5 @@
-import { useLoader } from "@react-three/fiber"
+import { useGLTF } from "@react-three/drei";
 import { Euler, Vector3 } from "three"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
 
 interface RoomObjectProps {
     model: string
@@ -9,6 +8,6 @@ interface RoomObjectProps {
 }
 
 export default function RoomObject({ model, position, rotation }: RoomObjectProps) {
-    const gltf = useLoader(GLTFLoader, model)
+    const gltf = useGLTF(model)
     return <primitive object={gltf.scene} position={position} rotation={rotation} />
 }
