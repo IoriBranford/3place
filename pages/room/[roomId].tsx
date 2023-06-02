@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
-import React, { useRef, useLayoutEffect, useContext } from 'react'
+import React, { useRef, useContext } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { FirstPersonControls, Plane } from '@react-three/drei'
+import { FirstPersonControls } from '@react-three/drei'
 import Head from 'next/head';
 import { EditorContext } from '../../contexts/Editor';
 import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
