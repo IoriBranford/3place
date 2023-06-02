@@ -3,6 +3,7 @@ import { BufferAttribute, Mesh, Object3D } from "three"
 import { AssetsContext } from "../contexts/Assets"
 import { EditorContext } from "../contexts/Editor"
 import { Plane } from "@react-three/drei"
+import RoomObject from "./RoomObject"
 
 export interface RectangleRoomProps {
     name: string
@@ -45,6 +46,25 @@ export default function RectangleRoom({ width = 4, height = 1, wallImage = '', f
     const wallMaterial = <SurfaceMaterial image={wallImage} />
     const floorMaterial = <SurfaceMaterial image={floorImage} />
     const ceilingMaterial = <SurfaceMaterial image={ceilingImage} />
+
+    const objects = [
+        {
+            model: '/pottedPlant.glb',
+            position: [width/2 - .5, 0, width/2 - .5]
+        },
+        {
+            model: '/lampRoundFloor.glb',
+            position: [-(width/2 - .5), 0, width/2 - .5]
+        },
+        {
+            model: '/loungeChair.glb',
+            position: [width/2 - .5, 0, -(width/2 - .5)]
+        },
+        {
+            model: '/desk.glb',
+            position: [-(width/2 - .5), 0, -(width/2 - .5)]
+        },
+    ]
 
     function onClick(object: Object3D) {
         editor.onClickObject(object)
@@ -105,5 +125,7 @@ export default function RectangleRoom({ width = 4, height = 1, wallImage = '', f
             </Plane>
 
         </object3D>
+
+        {objects.map(object => <RoomObject {...object} />)}
     </>
 }
