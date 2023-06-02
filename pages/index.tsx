@@ -9,6 +9,7 @@ function Scene() {
   })
 
   return <RectangleRoom
+    name={''}
     height={2}
     width={5}
     wallImage={'/bricks.png'}
