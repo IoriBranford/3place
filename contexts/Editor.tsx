@@ -27,13 +27,13 @@ class Editor {
     }
 
     flashSelectedObject(elapsedTime: number): void {
-        const pulse = (3 + Math.cos(elapsedTime * 8 * Math.PI)) / 4
+        const pulse = (1 + Math.cos(elapsedTime * 8 * Math.PI)) / 64
 
         if (this.selectedObject) {
             this.editObjectMeshes(this.selectedObject, (mesh) => {
                 const standardMaterial = mesh.material as MeshStandardMaterial
                 if (standardMaterial.isMeshStandardMaterial) {
-                    standardMaterial.color.setScalar(pulse)
+                    standardMaterial.emissive.setScalar(pulse)
                 }
             })
         }
@@ -68,7 +68,7 @@ class Editor {
             this.editObjectMeshes(this.selectedObject, (mesh) => {
                 const standardMaterial = mesh.material as MeshStandardMaterial
                 if (standardMaterial.isMeshStandardMaterial)
-                    standardMaterial.color.set('white')
+                    standardMaterial.emissive.set('black')
             })
         }
         this.selectedObject = object
