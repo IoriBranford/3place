@@ -6,19 +6,19 @@
     "start": "next start"
   },
   "dependencies": {
-    "@react-three/drei": "^9.57.3",
-    "@react-three/fiber": "^8.12.0",
-    "@types/three": "^0.149.0",
-    "eslint-config-next": "^13.4.2",
-    "next": "^13.4.2",
+    "@react-three/drei": "^9.71.0",
+    "@react-three/fiber": "^8.13.0",
+    "@types/three": "^0.152.1",
+    "eslint-config-next": "^13.4.4",
+    "next": "^13.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "three": "^0.150.1"
+    "three": "^0.153.0"
   },
   "devDependencies": {
     "@types/node": "18.15.5",
     "@types/react": "18.0.28",
-    "@types/react-dom": "^18.0.11",
+    "@types/react-dom": "^18.2.4",
     "typescript": "5.0.2"
   }
 }
