@@ -2,19 +2,42 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import Head from 'next/head';
 import { SplashScreen } from '../components/SplashScreen';
 import SquareRoom from '../components3D/SquareRoom';
+import RoomObject from '../components3D/RoomObject';
 
 function Scene() {
   useFrame((state, delta) => {
-    state.camera.rotateY(delta*Math.PI/30)
+    state.camera.rotateY(delta * Math.PI / 30)
   })
 
-  return <SquareRoom
-    name={''}
-    height={2}
-    width={5}
-    wallImage={'/bricks.png'}
-    floorImage={'/wood.png'}
-    ceilingImage={'/wood.png'} />
+  let objects = [
+    {
+      model: '/pottedPlant.glb',
+      position: [1.5, 0, 1.5]
+    },
+    {
+      model: '/lampRoundFloor.glb',
+      position: [-1.5, 0, 1.5]
+    },
+    {
+      model: '/loungeChair.glb',
+      position: [1.5, 0, -1.5]
+    },
+    {
+      model: '/desk.glb',
+      position: [-1.5, 0, -1.5]
+    },
+  ]
+
+  return <>
+    <SquareRoom
+      name={''}
+      height={2}
+      width={4}
+      wallImage={'/bricks.png'}
+      floorImage={'/wood.png'}
+      ceilingImage={'/wood.png'} />
+    {objects?.map(object => <RoomObject {...object} />)}
+  </>
 }
 
 export default function ThreePlace() {
