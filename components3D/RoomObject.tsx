@@ -1,13 +1,25 @@
 import { useGLTF } from "@react-three/drei";
-import { Euler, Vector3 } from "three"
+import { useContext, useRef } from "react";
+import { Euler, Object3D, Vector3 } from "three"
+import { EditorContext } from "../contexts/Editor";
+import { ThreeEvent } from "@react-three/fiber";
 
-interface RoomObjectProps {
+export interface RoomObjectProps {
     model: string
     position?: Vector3 | number[];
     rotation?: Euler | number[];
 }
 
 export default function RoomObject({ model, position, rotation }: RoomObjectProps) {
-    const gltf = useGLTF(model)
-    return <primitive object={gltf.scene} position={position} rotation={rotation} />
+    const editor = useContext(EditorContext)
+    const { scene } = useGLTF(model)
+    const ref = useRef<Object3D>(null!)
+
+    return <primitive object={scene} ref={ref}
+        position={position} rotation={rotation}
+        onClick={(e:ThreeEvent<MouseEvent>) => {
+            e.stopPropagation()
+            editor.onClickObject(ref.current)
+        }}>
+    </primitive>
 }
