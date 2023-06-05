@@ -85,6 +85,13 @@ export default function RoomPage() {
                     if (event.button == 2)
                         firstPersonControls.current.enabled = false
                 }}
+                onMouseEnter={(event)=> {
+                    if (event.buttons & 2)
+                        firstPersonControls.current.enabled = true
+                }}
+                onMouseLeave={()=>{
+                    firstPersonControls.current.enabled = false
+                }}
                 onTouchStart={(event) => {
                     if (event.touches.length > 0)
                         firstPersonControls.current.enabled = true
