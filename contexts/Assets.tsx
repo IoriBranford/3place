@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { TextureLoader, Texture, RepeatWrapping, sRGBEncoding } from "three";
+import { TextureLoader, Texture, RepeatWrapping, SRGBColorSpace } from "three";
 
 export class Assets {
     private textures = {}
@@ -10,7 +10,7 @@ export class Assets {
         if (!texture) {
             texture = this.textureLoader.load(url)
             texture.wrapS = texture.wrapT = RepeatWrapping
-            texture.encoding = sRGBEncoding
+            texture.colorSpace = SRGBColorSpace
             this.textures[url] = texture
         }
         return texture
