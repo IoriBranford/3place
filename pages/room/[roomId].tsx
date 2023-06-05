@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useRef, useContext } from 'react'
+import React, { useRef, useContext, useEffect, useLayoutEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { FirstPersonControls } from '@react-three/drei'
 import Head from 'next/head';
@@ -23,6 +23,39 @@ function Scene({ roomProps, objects }: { roomProps: SquareRoomProps, objects?: R
 }
 
 export default function RoomPage() {
+    const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
+    const canvasRef = useRef<HTMLCanvasElement>(null!)
+
+    useEffect(() => {
+        const canvas = canvasRef.current
+        if (!canvas)
+            return
+
+        canvas.addEventListener("touchstart", (event) => {
+            event.preventDefault()
+            if (event.touches.length > 0)
+                firstPersonControls.current.enabled = true
+        }, { passive: false })
+
+        canvas.addEventListener("touchmove", (event) => {
+            event.preventDefault()
+            let touch = event.changedTouches[0]
+            let mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                screenX: touch.screenX,
+                screenY: touch.screenY,
+            })
+            firstPersonControls.current.dispatchEvent(mouseEvent)
+        }, { passive: false })
+
+        canvas.addEventListener("touchend", (event) => {
+            event.preventDefault()
+            if (event.touches.length < 1)
+                firstPersonControls.current.enabled = false
+        }, { passive: false })
+    })
+
     const router = useRouter();
     const roomId = router.query.roomId;
 
@@ -56,7 +89,6 @@ export default function RoomPage() {
     // query db for room info by roomId
     // if found replace props values
 
-    const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
     return (
         <>
             <Head>
@@ -75,7 +107,8 @@ export default function RoomPage() {
                 }
             `}
             </style>
-            <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
+            <Canvas ref={canvasRef}
+                style={{ display: 'block', width: '100%', height: '100%' }}
                 camera={{ position: [0, .5, 0], rotation: [0, -Math.PI / 2, 0] }}
                 onMouseDown={(event) => {
                     if (event.button == 2)
@@ -83,27 +116,6 @@ export default function RoomPage() {
                 }}
                 onMouseUp={(event) => {
                     if (event.button == 2)
-                        firstPersonControls.current.enabled = false
-                }}
-                onTouchStart={(event) => {
-                    event.preventDefault()
-                    if (event.touches.length > 0)
-                        firstPersonControls.current.enabled = true
-                }}
-                onTouchMove={(event) => {
-                    event.preventDefault()
-                    let touch = event.changedTouches[0]
-                    let mouseEvent = new MouseEvent("mousemove", {
-                        clientX: touch.clientX,
-                        clientY: touch.clientY,
-                        screenX: touch.screenX,
-                        screenY: touch.screenY,
-                    })
-                    firstPersonControls.current.dispatchEvent(mouseEvent)
-                }}
-                onTouchEnd={(event) => {
-                    event.preventDefault()
-                    if (event.touches.length < 1)
                         firstPersonControls.current.enabled = false
                 }}
             >
