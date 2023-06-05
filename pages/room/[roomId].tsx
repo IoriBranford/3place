@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import React, { useRef, useContext } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import React, { useRef, useContext, useEffect, MutableRefObject } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { FirstPersonControls } from '@react-three/drei'
 import Head from 'next/head';
 import { EditorContext } from '../../contexts/Editor';
@@ -9,11 +9,22 @@ import { Gui } from '../../components/Gui';
 import SquareRoom, { SquareRoomProps } from "../../components3D/SquareRoom";
 import RoomObject, { RoomObjectProps } from "../../components3D/RoomObject";
 
-function Scene({ roomProps, objects }: { roomProps: SquareRoomProps, objects?: RoomObjectProps[] }) {
+function Scene({ roomProps, objects, firstPersonControls }: { 
+    roomProps: SquareRoomProps, 
+    objects?: RoomObjectProps[], 
+    firstPersonControls: MutableRefObject<FirstPersonControlImpl>
+}) {
+    const three = useThree()
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
         editor.flashSelectedObject(state.clock.elapsedTime)
+    })
+
+    window.addEventListener('resize', (e) => {
+        console.log(e)
+        firstPersonControls.current.handleResize()
+        three.camera.updateProjectionMatrix()
     })
 
     return <>
@@ -118,7 +129,7 @@ export default function RoomPage() {
                     verticalMin={Math.PI / 4}
                     verticalMax={Math.PI * 3 / 4}
                 />
-                <Scene roomProps={roomProps} objects={objects} />
+                <Scene roomProps={roomProps} objects={objects} firstPersonControls={firstPersonControls}/>
             </Canvas>
             <Gui firstMenu="" />
         </>
