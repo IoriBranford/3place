@@ -61,8 +61,10 @@ export default function RoomPage() {
 
     const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
 
+    useEffect(() => {
     window.addEventListener('resize', (e) => {
         firstPersonControls.current.handleResize()
+        })
     })
 
     return (
