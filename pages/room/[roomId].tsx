@@ -9,22 +9,14 @@ import { Gui } from '../../components/Gui';
 import SquareRoom, { SquareRoomProps } from "../../components3D/SquareRoom";
 import RoomObject, { RoomObjectProps } from "../../components3D/RoomObject";
 
-function Scene({ roomProps, objects, firstPersonControls }: { 
+function Scene({ roomProps, objects }: { 
     roomProps: SquareRoomProps, 
-    objects?: RoomObjectProps[], 
-    firstPersonControls: MutableRefObject<FirstPersonControlImpl>
+    objects?: RoomObjectProps[]
 }) {
-    const three = useThree()
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
         editor.flashSelectedObject(state.clock.elapsedTime)
-    })
-
-    window.addEventListener('resize', (e) => {
-        console.log(e)
-        firstPersonControls.current.handleResize()
-        three.camera.updateProjectionMatrix()
     })
 
     return <>
@@ -68,6 +60,11 @@ export default function RoomPage() {
     // if found replace props values
 
     const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
+
+    window.addEventListener('resize', (e) => {
+        firstPersonControls.current.handleResize()
+    })
+
     return (
         <>
             <Head>
@@ -129,7 +126,7 @@ export default function RoomPage() {
                     verticalMin={Math.PI / 4}
                     verticalMax={Math.PI * 3 / 4}
                 />
-                <Scene roomProps={roomProps} objects={objects} firstPersonControls={firstPersonControls}/>
+                <Scene roomProps={roomProps} objects={objects} />
             </Canvas>
             <Gui firstMenu="" />
         </>
