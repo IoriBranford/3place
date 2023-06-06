@@ -48,9 +48,8 @@ class Editor {
         return this.selectedObject != null
     }
 
-    isSelectionRoomObject() {
-        // TODO: how do you tell a room object from wall, floor, etc.
-        return this.isObjectSelected()
+    isSelectedObjectForSurface(surfaceName: string) {
+        return this.isObjectSelected() && this.selectedObject.userData.forSurface === surfaceName
     }
 
     editObjectMeshes(object: Object3D, edit: (m: Mesh) => void) {

@@ -46,24 +46,26 @@ function Scene({ roomProps, objects }: {
     objects?: RoomObjectProps[]
 }) {
     const floorGrid = useRef<LineSegments2>(null!)
-    // const ceilingGrid = useRef<LineSegments2>(null!)
-    // const wallsGrid = useRef<LineSegments2>(null!)
+    const ceilingGrid = useRef<LineSegments2>(null!)
+    const wallsGrid = useRef<LineSegments2>(null!)
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
         editor.flashSelectedObject(state.clock.elapsedTime)
-        floorGrid.current.visible = editor.isSelectionRoomObject()
+        floorGrid.current.visible = editor.isSelectedObjectForSurface('floor')
+        wallsGrid.current.visible = editor.isSelectedObjectForSurface('wall')
+        ceilingGrid.current.visible = editor.isSelectedObjectForSurface('ceiling')
     })
 
-    const floorPoints = horizontalGridPoints(roomProps.width, 1 / 256)
-    // const ceilingPoints = horizontalGridPoints(roomProps.width, roomProps.height - 1/256)
-    // const wallPoints = wallGridPoints(roomProps.width, roomProps.height)
     return <>
         <SquareRoom {...roomProps} />
         {objects?.map(object => <RoomObject {...object} />)}
-        <Line ref={floorGrid} color={'white'} segments={true} points={floorPoints} />
-        {/* <Line ref={ceilingGrid} color={'white'} segments={true} points={ceilingPoints}/>
-        <Line ref={wallsGrid} color={'white'} segments={true} points={wallPoints}/> */}
+        <Line ref={floorGrid} color={'white'} segments={true}
+            points={horizontalGridPoints(roomProps.width, 1 / 256)} />
+        <Line ref={ceilingGrid} color={'white'} segments={true}
+            points={horizontalGridPoints(roomProps.width, roomProps.height - 1/256)}/>
+        <Line ref={wallsGrid} color={'white'} segments={true}
+            points={wallGridPoints(roomProps.width, roomProps.height)}/>
     </>
 }
 
