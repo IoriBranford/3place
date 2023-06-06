@@ -25,8 +25,10 @@ class Editor {
 
     onClickObject(object: Object3D): void {
         this.setSelectedObject(object)
+        const userData = object.userData
+        let nextMenu = userData.contextMenu ? userData.contextMenu : ''
         if (this.guiState)
-            this.guiState.setActiveMenu('TextureMenu')
+            this.guiState.setActiveMenu(nextMenu)
     }
 
     flashSelectedObject(elapsedTime: number): void {
