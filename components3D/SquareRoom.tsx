@@ -46,10 +46,6 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
     const floorMaterial = <SurfaceMaterial image={floorImage} />
     const ceilingMaterial = <SurfaceMaterial image={ceilingImage} />
 
-    function onClick(object: Object3D) {
-        editor.onClickObject(object)
-    }
-
     const r = width / 2
     const PI = Math.PI
     return <>
@@ -57,24 +53,33 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             position={[0, height - .5, 0]} />
 
         <Plane ref={floorRef}
-            onClick={() => { onClick(floorRef.current) }}
+            onClick={() => { editor.onClickObject(floorRef.current) }}
             position={[0, 0, 0]}
             rotation={[-Math.PI / 2, 0, 0]}
-            args={[width, width]}>
+            args={[width, width]}
+            userData={{
+                contextMenu: 'TextureMenu'
+            }}>
             {floorMaterial}
         </Plane>
 
         <Plane ref={ceilingRef}
-            onClick={() => { onClick(ceilingRef.current) }}
+            onClick={() => { editor.onClickObject(ceilingRef.current) }}
             position={[0, height, 0]}
             rotation={[Math.PI / 2, 0, 0]}
-            args={[width, width]}>
+            args={[width, width]}
+            userData={{
+                contextMenu: 'TextureMenu'
+            }}>
             {ceilingMaterial}
         </Plane>
 
         <object3D ref={wallsRef}
             position={[0, height / 2, 0]}
-            onClick={() => { onClick(wallsRef.current) }}>
+            onClick={() => { editor.onClickObject(wallsRef.current) }}
+            userData={{
+                contextMenu: 'TextureMenu'
+            }}>
 
             <Plane
                 position={[0, 0, -r]}

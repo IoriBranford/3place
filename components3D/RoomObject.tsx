@@ -17,6 +17,10 @@ export default function RoomObject({ model, position, rotation }: RoomObjectProp
 
     return <primitive object={scene} ref={ref}
         position={position} rotation={rotation}
+        userData={{
+            forSurface: 'floor',
+            contextMenu: 'RoomObjectMenu'
+        }}
         onClick={(e:ThreeEvent<MouseEvent>) => {
             e.stopPropagation()
             editor.onClickObject(ref.current)
