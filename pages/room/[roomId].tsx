@@ -8,7 +8,6 @@ import { FirstPersonControls as FirstPersonControlImpl, LineSegments2 } from 'th
 import { Gui } from '../../components/Gui';
 import SquareRoom, { SquareRoomProps } from "../../components3D/SquareRoom";
 import RoomObject, { RoomObjectProps } from "../../components3D/RoomObject";
-import { LineSegments } from "three";
 
 function horizontalGridPoints(width: number, y: number) {
     const halfWidth = width / 2
@@ -69,6 +68,41 @@ function Scene({ roomProps, objects }: {
 }
 
 export default function RoomPage() {
+    const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
+    const canvasRef = useRef<HTMLCanvasElement>(null!)
+
+    useEffect(() => {
+        window.addEventListener('resize', (e) => {
+            firstPersonControls.current.handleResize()
+        })
+
+        const canvas = canvasRef.current
+
+        canvas.addEventListener("touchstart", (event) => {
+            event.preventDefault()
+            if (event.touches.length > 0)
+                firstPersonControls.current.enabled = true
+        }, { passive: false })
+
+        canvas.addEventListener("touchmove", (event) => {
+            event.preventDefault()
+            let touch = event.changedTouches[0]
+            let mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                screenX: touch.screenX,
+                screenY: touch.screenY,
+            })
+            firstPersonControls.current.dispatchEvent(mouseEvent)
+        }, { passive: false })
+
+        canvas.addEventListener("touchend", (event) => {
+            event.preventDefault()
+            if (event.touches.length < 1)
+                firstPersonControls.current.enabled = false
+        }, { passive: false })
+    })
+
     const router = useRouter();
     const roomId = router.query.roomId;
 
@@ -102,14 +136,6 @@ export default function RoomPage() {
     // query db for room info by roomId
     // if found replace props values
 
-    const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
-
-    useEffect(() => {
-        window.addEventListener('resize', (e) => {
-            firstPersonControls.current.handleResize()
-        })
-    })
-
     return (
         <>
             <Head>
@@ -128,7 +154,8 @@ export default function RoomPage() {
                 }
             `}
             </style>
-            <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
+            <Canvas ref={canvasRef}
+                style={{ display: 'block', width: '100%', height: '100%' }}
                 camera={{ position: [0, .5, 0], rotation: [0, -Math.PI / 2, 0] }}
                 onMouseDown={(event) => {
                     if (event.button == 2)
@@ -144,24 +171,6 @@ export default function RoomPage() {
                 }}
                 onMouseLeave={() => {
                     firstPersonControls.current.enabled = false
-                }}
-                onTouchStart={(event) => {
-                    if (event.touches.length > 0)
-                        firstPersonControls.current.enabled = true
-                }}
-                onTouchMove={(event) => {
-                    let touch = event.changedTouches[0]
-                    let mouseEvent = new MouseEvent("mousemove", {
-                        clientX: touch.clientX,
-                        clientY: touch.clientY,
-                        screenX: touch.screenX,
-                        screenY: touch.screenY,
-                    })
-                    firstPersonControls.current.dispatchEvent(mouseEvent)
-                }}
-                onTouchEnd={(event) => {
-                    if (event.touches.length < 1)
-                        firstPersonControls.current.enabled = false
                 }}
             >
                 <FirstPersonControls ref={firstPersonControls}
