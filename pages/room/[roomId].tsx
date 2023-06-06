@@ -1,27 +1,70 @@
 import { useRouter } from "next/router";
-import React, { useRef, useContext, useEffect, MutableRefObject } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { FirstPersonControls } from '@react-three/drei'
+import React, { useRef, useContext, useEffect } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { FirstPersonControls, Line } from '@react-three/drei'
 import Head from 'next/head';
 import { EditorContext } from '../../contexts/Editor';
-import { FirstPersonControls as FirstPersonControlImpl } from 'three-stdlib';
+import { FirstPersonControls as FirstPersonControlImpl, LineSegments2 } from 'three-stdlib';
 import { Gui } from '../../components/Gui';
 import SquareRoom, { SquareRoomProps } from "../../components3D/SquareRoom";
 import RoomObject, { RoomObjectProps } from "../../components3D/RoomObject";
+import { LineSegments } from "three";
 
-function Scene({ roomProps, objects }: { 
-    roomProps: SquareRoomProps, 
+function horizontalGridPoints(width: number, y: number) {
+    const halfWidth = width / 2
+    const points: [number, number, number][] = []
+    for (let z = -halfWidth; z <= halfWidth; ++z) {
+        points.push([halfWidth, y, z], [-halfWidth, y, z])
+    }
+    for (let x = -halfWidth; x <= halfWidth; ++x) {
+        points.push([x, y, -halfWidth], [x, y, halfWidth])
+    }
+    return points
+}
+
+function wallGridPoints(width: number, height: number) {
+    const halfWidth = width / 2 - 1 / 256
+    const points: [number, number, number][] = []
+    for (let y = 0; y <= height; ++y) {
+        points.push([halfWidth, y, halfWidth], [-halfWidth, y, halfWidth],
+            [halfWidth, y, halfWidth], [halfWidth, y, -halfWidth],
+            [-halfWidth, y, -halfWidth], [-halfWidth, y, halfWidth],
+            [-halfWidth, y, -halfWidth], [halfWidth, y, -halfWidth])
+    }
+    for (let z = -halfWidth; z <= halfWidth; ++z) {
+        points.push([halfWidth, 0, z], [halfWidth, height, z],
+            [-halfWidth, 0, z], [-halfWidth, height, z])
+    }
+    for (let x = -halfWidth; x <= halfWidth; ++x) {
+        points.push([x, 0, halfWidth], [x, height, halfWidth],
+            [x, 0, -halfWidth], [x, height, -halfWidth])
+    }
+    return points
+}
+
+function Scene({ roomProps, objects }: {
+    roomProps: SquareRoomProps,
     objects?: RoomObjectProps[]
 }) {
+    const floorGrid = useRef<LineSegments2>(null!)
+    // const ceilingGrid = useRef<LineSegments2>(null!)
+    // const wallsGrid = useRef<LineSegments2>(null!)
     const editor = useContext(EditorContext)
 
     useFrame((state, delta) => {
         editor.flashSelectedObject(state.clock.elapsedTime)
+        floorGrid.current.visible = editor.isSelectionRoomObject()
     })
 
+    const floorPoints = horizontalGridPoints(roomProps.width, 1 / 256)
+    // const ceilingPoints = horizontalGridPoints(roomProps.width, roomProps.height - 1/256)
+    // const wallPoints = wallGridPoints(roomProps.width, roomProps.height)
     return <>
         <SquareRoom {...roomProps} />
         {objects?.map(object => <RoomObject {...object} />)}
+        <Line ref={floorGrid} color={'white'} segments={true} points={floorPoints} />
+        {/* <Line ref={ceilingGrid} color={'white'} segments={true} points={ceilingPoints}/>
+        <Line ref={wallsGrid} color={'white'} segments={true} points={wallPoints}/> */}
     </>
 }
 
@@ -62,8 +105,8 @@ export default function RoomPage() {
     const firstPersonControls = useRef<FirstPersonControlImpl>(null!)
 
     useEffect(() => {
-    window.addEventListener('resize', (e) => {
-        firstPersonControls.current.handleResize()
+        window.addEventListener('resize', (e) => {
+            firstPersonControls.current.handleResize()
         })
     })
 
@@ -95,11 +138,11 @@ export default function RoomPage() {
                     if (event.button == 2)
                         firstPersonControls.current.enabled = false
                 }}
-                onMouseEnter={(event)=> {
+                onMouseEnter={(event) => {
                     if (event.buttons & 2)
                         firstPersonControls.current.enabled = true
                 }}
-                onMouseLeave={()=>{
+                onMouseLeave={() => {
                     firstPersonControls.current.enabled = false
                 }}
                 onTouchStart={(event) => {
