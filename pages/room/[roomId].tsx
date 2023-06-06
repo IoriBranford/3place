@@ -130,7 +130,7 @@ export default function RoomPage() {
             position: [1.5, 0, -1.5]
         },
         {
-            model: '/desk.glb',
+            model: '/televisionOnCabinet.glb',
             position: [-1.5, 0, -1.5]
         },
     ]
