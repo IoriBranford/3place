@@ -5,7 +5,10 @@ import { GuiState } from "../components/Gui"
 class Editor {
     guiState: GuiState = null!
 
-    private selectedObject: Object3D = null!
+    private _selectedObject: Object3D = null!
+    get selectedObject() {
+        return this._selectedObject
+    }
     private pointedObject: Object3D = null!
 
     onPointerOnObject(object: Object3D) {
@@ -76,7 +79,7 @@ class Editor {
                     standardMaterial.emissive.set('black')
             })
         }
-        this.selectedObject = object
+        this._selectedObject = object
     }
 }
 
