@@ -67,7 +67,6 @@ class Editor {
                 const standardMaterial = mesh.material as MeshStandardMaterial
                 if (standardMaterial.isMeshStandardMaterial) {
                     standardMaterial.map = texture
-                    standardMaterial.needsUpdate = true
                 }
             })
     }
