@@ -11,19 +11,19 @@ function Scene() {
 
   let objects = [
     {
-      model: '/pottedPlant.glb',
+      type: 'PottedPlant',
       position: [1.5, 0, 1.5]
     },
     {
-      model: '/lampRoundFloor.glb',
+      type: 'FloorLamp',
       position: [-1.5, 0, 1.5]
     },
     {
-      model: '/loungeChair.glb',
+      type: 'LoungeChair',
       position: [1.5, 0, -1.5]
     },
     {
-      model: '/televisionOnCabinet.glb',
+      type: 'LCDTelevision',
       position: [-1.5, 0, -1.5]
     },
   ]
