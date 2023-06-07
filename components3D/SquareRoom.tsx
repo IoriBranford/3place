@@ -54,12 +54,15 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
 
         <Plane ref={floorRef}
             onClick={() => { editor.onClickObject(floorRef.current) }}
+            onPointerMove={(e) => editor.onPointerMoveSurface(floorRef.current, e)}
             position={[0, 0, 0]}
             rotation={[-Math.PI / 2, 0, 0]}
             args={[width, width]}
             userData={{
-                contextMenu: 'TextureMenu'
-            }}>
+                surfaceType: 'floor',
+                contextMenu: 'TextureMenu',
+            }}
+            >
             {floorMaterial}
         </Plane>
 
@@ -69,6 +72,7 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             rotation={[Math.PI / 2, 0, 0]}
             args={[width, width]}
             userData={{
+                surfaceType: 'ceiling',
                 contextMenu: 'TextureMenu'
             }}>
             {ceilingMaterial}
@@ -78,6 +82,7 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             position={[0, height / 2, 0]}
             onClick={() => { editor.onClickObject(wallsRef.current) }}
             userData={{
+                surfaceType: 'wall',
                 contextMenu: 'TextureMenu'
             }}>
 

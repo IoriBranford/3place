@@ -1,6 +1,7 @@
 import { createContext } from "react"
 import { Mesh, MeshStandardMaterial, Object3D, Texture } from "three"
 import { GuiState } from "../components/Gui"
+import { ThreeEvent } from "@react-three/fiber"
 
 class Editor {
     guiState: GuiState = null!
@@ -80,6 +81,19 @@ class Editor {
             })
         }
         this._selectedObject = object
+    }
+
+    onPointerMoveSurface(surface: Object3D, event: ThreeEvent<MouseEvent>) {
+        const object = this.selectedObject
+        if (this.isSelectedObjectForSurface(surface.userData.surfaceType)) {
+            const intersection = event.intersections[0]
+            if (intersection) {
+                const movement = object.worldToLocal(intersection.point)
+                object.translateX(movement.x)
+                object.translateY(movement.y)
+                object.translateZ(movement.z)
+            }
+        }
     }
 }
 
