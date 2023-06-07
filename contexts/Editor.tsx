@@ -25,9 +25,15 @@ class Editor {
     }
 
     onClickObject(object: Object3D): void {
-        this.setSelectedObject(object)
-        const userData = object.userData
-        let nextMenu = userData.contextMenu ? userData.contextMenu : ''
+        let nextMenu = ''
+        if (object == this.selectedObject) {
+            this.setSelectedObject(null!)
+        } else {
+            this.setSelectedObject(object)
+            const userData = object.userData
+            if (userData.contextMenu)
+                nextMenu = userData.contextMenu
+        }
         if (this.guiState)
             this.guiState.setActiveMenu(nextMenu)
     }
