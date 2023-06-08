@@ -1,10 +1,11 @@
 import { createContext } from "react"
-import { Mesh, MeshStandardMaterial, Object3D, Texture } from "three"
+import { Mesh, MeshStandardMaterial, Object3D, Texture, Vector3 } from "three"
 import { GuiState } from "../components/Gui"
 import { ThreeEvent } from "@react-three/fiber"
 
 class Editor {
     guiState: GuiState = null!
+    cellSize = 0.5
 
     private _selectedObject: Object3D = null!
     get selectedObject() {
@@ -94,7 +95,12 @@ class Editor {
         if (this.isSelectedObjectForSurface(surface.userData.surfaceType)) {
             const intersection = event.intersections[0]
             if (intersection) {
-                const movement = object.worldToLocal(intersection.point)
+                const point = new Vector3()
+                point.x = Math.floor(intersection.point.x / this.cellSize) * this.cellSize
+                // point.y = Math.floor(intersection.point.y / this.cellSize) * this.cellSize
+                point.z = Math.floor(intersection.point.z / this.cellSize) * this.cellSize
+                
+                const movement = object.worldToLocal(point)
                 object.translateX(movement.x)
                 object.translateY(movement.y)
                 object.translateZ(movement.z)
