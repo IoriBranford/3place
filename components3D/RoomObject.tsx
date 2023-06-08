@@ -7,7 +7,7 @@ import { RoomObjectTypes } from "../data/RoomObjectTypes";
 
 export interface RoomObjectProps {
     type: string
-    position?: Vector3 | number[];
+    position: Vector3 | number[];
     rotation?: Euler | number[];
 }
 
