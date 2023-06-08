@@ -3,6 +3,7 @@ import { BufferAttribute, Mesh, Object3D } from "three"
 import { AssetsContext } from "../contexts/Assets"
 import { EditorContext } from "../contexts/Editor"
 import { Plane } from "@react-three/drei"
+import { ThreeEvent } from "@react-three/fiber"
 
 export interface SquareRoomProps {
     name: string
@@ -48,13 +49,28 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
 
     const r = width / 2
     const PI = Math.PI
+
+    function onPointerMove(event: ThreeEvent<MouseEvent>) {
+        if (editor.isMovingRoomObject(editor.selectedObject, event.eventObject.userData.surfaceType)) {
+            editor.setSelectedObjectPosition(event.intersections[0].point)
+        }
+    }
+
+    function onClick(event: ThreeEvent<MouseEvent>) {
+        if (editor.isMovingRoomObject(editor.selectedObject)) {
+            editor.setSelectedObject(null!)
+        } else {
+            editor.onClickObject(event.eventObject)
+        }
+    }
+
     return <>
         <pointLight
             position={[0, height - .5, 0]} />
 
         <Plane ref={floorRef}
-            onClick={() => { editor.onClickObject(floorRef.current) }}
-            onPointerMove={(e) => editor.onPointerMoveSurface(floorRef.current, e)}
+            onClick={onClick}
+            onPointerMove={onPointerMove}
             position={[0, 0, 0]}
             rotation={[-Math.PI / 2, 0, 0]}
             args={[width, width]}
@@ -62,12 +78,12 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
                 surfaceType: 'floor',
                 contextMenu: 'TextureMenu',
             }}
-            >
+        >
             {floorMaterial}
         </Plane>
 
         <Plane ref={ceilingRef}
-            onClick={() => { editor.onClickObject(ceilingRef.current) }}
+            onClick={onClick}
             position={[0, height, 0]}
             rotation={[Math.PI / 2, 0, 0]}
             args={[width, width]}
@@ -80,7 +96,7 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
 
         <object3D ref={wallsRef}
             position={[0, height / 2, 0]}
-            onClick={() => { editor.onClickObject(wallsRef.current) }}
+            onClick={onClick}
             userData={{
                 surfaceType: 'wall',
                 contextMenu: 'TextureMenu'

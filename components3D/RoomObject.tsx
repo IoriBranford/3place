@@ -15,14 +15,20 @@ export default function RoomObject({ type, position, rotation }: RoomObjectProps
     const typeData = RoomObjectTypes[type]
     const editor = useContext(EditorContext)
     const { scene } = useGLTF(typeData.modelUrl)
-    const ref = useRef<Object3D>(null!)
 
-    return <primitive object={scene} ref={ref}
+    function onClick(event: ThreeEvent<MouseEvent>) {
+        const object = event.eventObject
+        event.stopPropagation()
+        if (editor.isMovingRoomObject(object)) {
+            editor.setSelectedObject(null!)
+        } else {
+            editor.onClickObject(object)
+        }
+    }
+
+    return <primitive object={scene}
         position={position} rotation={rotation}
-        userData={{...typeData}}
-        onClick={(e:ThreeEvent<MouseEvent>) => {
-            e.stopPropagation()
-            editor.onClickObject(ref.current)
-        }}>
+        userData={{ ...typeData }}
+        onClick={onClick}>
     </primitive>
 }

@@ -90,22 +90,21 @@ class Editor {
         this._selectedObject = object
     }
 
-    onPointerMoveSurface(surface: Object3D, event: ThreeEvent<MouseEvent>) {
-        const object = this.selectedObject
-        if (this.isSelectedObjectForSurface(surface.userData.surfaceType)) {
-            const intersection = event.intersections[0]
-            if (intersection) {
-                const point = new Vector3()
-                point.x = Math.floor(intersection.point.x / this.cellSize) * this.cellSize
-                // point.y = Math.floor(intersection.point.y / this.cellSize) * this.cellSize
-                point.z = Math.floor(intersection.point.z / this.cellSize) * this.cellSize
-                
-                const movement = object.worldToLocal(point)
-                object.translateX(movement.x)
-                object.translateY(movement.y)
-                object.translateZ(movement.z)
-            }
-        }
+    isMovingRoomObject(object: Object3D, surfaceType = object?.userData?.forSurface) {
+        return this.selectedObject == object && surfaceType && this.isSelectedObjectForSurface(surfaceType)
+    }
+
+    setSelectedObjectPosition(position: Vector3) {
+        const gridSnappedPosition = position.clone()
+        gridSnappedPosition.x = Math.floor(gridSnappedPosition.x / this.cellSize) * this.cellSize
+        // point.y = Math.floor(point.y / this.cellSize) * this.cellSize
+        gridSnappedPosition.z = Math.floor(gridSnappedPosition.z / this.cellSize) * this.cellSize
+        position = gridSnappedPosition
+
+        const movement = this.selectedObject.worldToLocal(position)
+        this.selectedObject.translateX(movement.x)
+        this.selectedObject.translateY(movement.y)
+        this.selectedObject.translateZ(movement.z)
     }
 }
 
