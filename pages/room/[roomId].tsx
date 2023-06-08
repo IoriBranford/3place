@@ -9,32 +9,32 @@ import { Gui } from '../../components/Gui';
 import SquareRoom, { SquareRoomProps } from "../../components3D/SquareRoom";
 import RoomObject, { RoomObjectProps } from "../../components3D/RoomObject";
 
-function horizontalGridPoints(width: number, y: number) {
+function horizontalGridPoints(width: number, y: number, cellSize = 1) {
     const halfWidth = width / 2
     const points: [number, number, number][] = []
-    for (let z = -halfWidth; z <= halfWidth; ++z) {
+    for (let z = -halfWidth; z <= halfWidth; z += cellSize) {
         points.push([halfWidth, y, z], [-halfWidth, y, z])
     }
-    for (let x = -halfWidth; x <= halfWidth; ++x) {
+    for (let x = -halfWidth; x <= halfWidth; x += cellSize) {
         points.push([x, y, -halfWidth], [x, y, halfWidth])
     }
     return points
 }
 
-function wallGridPoints(width: number, height: number) {
+function wallGridPoints(width: number, height: number, cellSize = 1) {
     const halfWidth = width / 2 - 1 / 256
     const points: [number, number, number][] = []
-    for (let y = 0; y <= height; ++y) {
+    for (let y = 0; y <= height; y += cellSize) {
         points.push([halfWidth, y, halfWidth], [-halfWidth, y, halfWidth],
             [halfWidth, y, halfWidth], [halfWidth, y, -halfWidth],
             [-halfWidth, y, -halfWidth], [-halfWidth, y, halfWidth],
             [-halfWidth, y, -halfWidth], [halfWidth, y, -halfWidth])
     }
-    for (let z = -halfWidth; z <= halfWidth; ++z) {
+    for (let z = -halfWidth; z <= halfWidth; z += cellSize) {
         points.push([halfWidth, 0, z], [halfWidth, height, z],
             [-halfWidth, 0, z], [-halfWidth, height, z])
     }
-    for (let x = -halfWidth; x <= halfWidth; ++x) {
+    for (let x = -halfWidth; x <= halfWidth; x += cellSize) {
         points.push([x, 0, halfWidth], [x, height, halfWidth],
             [x, 0, -halfWidth], [x, height, -halfWidth])
     }
@@ -61,11 +61,11 @@ function Scene({ roomProps, objects }: {
         <SquareRoom {...roomProps} />
         {objects?.map(object => <RoomObject {...object} />)}
         <Line ref={floorGrid} color={'white'} segments={true}
-            points={horizontalGridPoints(roomProps.width, 1 / 256)} />
+            points={horizontalGridPoints(roomProps.width, 1 / 256, editor.cellSize)} />
         <Line ref={ceilingGrid} color={'white'} segments={true}
-            points={horizontalGridPoints(roomProps.width, roomProps.height - 1/256)}/>
+            points={horizontalGridPoints(roomProps.width, roomProps.height - 1/256, editor.cellSize)}/>
         <Line ref={wallsGrid} color={'white'} segments={true}
-            points={wallGridPoints(roomProps.width, roomProps.height)}/>
+            points={wallGridPoints(roomProps.width, roomProps.height, editor.cellSize)}/>
     </>
 }
 
