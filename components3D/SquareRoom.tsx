@@ -34,14 +34,16 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
     const ceilingRef = useRef<Mesh>(null!)
     const editor = useContext(EditorContext)
 
-    useLayoutEffect(() => {
+    function updateUVs() {
         wallsRef.current.children.map((wall: Mesh) => {
             if (wall.isMesh)
                 setUVs(wall, width, height)
         })
         setUVs(floorRef.current, width, width)
         setUVs(ceilingRef.current, width, width)
-    })
+    }
+
+    useLayoutEffect(updateUVs)
 
     const wallMaterial = <SurfaceMaterial image={wallImage} />
     const floorMaterial = <SurfaceMaterial image={floorImage} />
@@ -64,7 +66,7 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
         }
     }
 
-    return <>
+    return <group userData={{ updateUVs }}>
         <pointLight
             position={[0, height - .5, 0]} />
 
@@ -134,5 +136,5 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             </Plane>
 
         </object3D>
-    </>
+    </group>
 }
