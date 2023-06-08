@@ -31,7 +31,6 @@ export function TextureMenu() {
     const gui = useContext(GuiContext)
     const editor = useContext(EditorContext)
     const assets = useContext(AssetsContext)
-    const self = useRef<HTMLDivElement>(null!)
     if (gui.activeMenu != 'TextureMenu') {
         return <></>
     }
@@ -45,7 +44,7 @@ export function TextureMenu() {
         gui.setActiveMenu('')
     }
     return (
-        <div ref={self} style={style}>
+        <div style={style}>
             {
                 AllTextures.map((image) => (
                     <Image key={image} src={image} alt={image} width={64} height={64} onClick={() => onTextureClick(image)} />
