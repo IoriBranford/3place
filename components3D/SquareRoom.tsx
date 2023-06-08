@@ -77,6 +77,7 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             userData={{
                 surfaceType: 'floor',
                 contextMenu: 'TextureMenu',
+                textureUrl: floorImage,
             }}
         >
             {floorMaterial}
@@ -89,7 +90,8 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             args={[width, width]}
             userData={{
                 surfaceType: 'ceiling',
-                contextMenu: 'TextureMenu'
+                contextMenu: 'TextureMenu',
+                textureUrl: ceilingImage,
             }}>
             {ceilingMaterial}
         </Plane>
@@ -99,7 +101,8 @@ export default function SquareRoom({ width = 4, height = 1, wallImage = '', floo
             onClick={onClick}
             userData={{
                 surfaceType: 'wall',
-                contextMenu: 'TextureMenu'
+                contextMenu: 'TextureMenu',
+                textureUrl: wallImage,
             }}>
 
             <Plane

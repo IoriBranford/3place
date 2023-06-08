@@ -1,7 +1,6 @@
 import { createContext } from "react"
 import { Mesh, MeshStandardMaterial, Object3D, Texture, Vector3 } from "three"
 import { GuiState } from "../components/Gui"
-import { ThreeEvent } from "@react-three/fiber"
 
 class Editor {
     guiState: GuiState = null!
@@ -69,14 +68,16 @@ class Editor {
         }
     }
 
-    setSelectedObjectTexture(texture: Texture) {
-        if (this.selectedObject)
+    setSelectedObjectTexture(texture: Texture, url: string) {
+        if (this.selectedObject) {
+            this.selectedObject.userData.textureUrl = url
             this.editObjectMeshes(this.selectedObject, (mesh) => {
                 const standardMaterial = mesh.material as MeshStandardMaterial
                 if (standardMaterial.isMeshStandardMaterial) {
                     standardMaterial.map = texture
                 }
             })
+        }
     }
 
     setSelectedObject(object: Object3D) {

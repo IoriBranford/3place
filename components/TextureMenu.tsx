@@ -1,4 +1,4 @@
-import { useContext, useRef, CSSProperties } from "react"
+import { useContext, CSSProperties } from "react"
 import Image from "next/image"
 import { EditorContext } from "../contexts/Editor"
 import { AssetsContext } from "../contexts/Assets"
@@ -35,9 +35,9 @@ export function TextureMenu() {
         return <></>
     }
     const style = { position: 'absolute', left: 0, top: 0, height: 'auto' } as CSSProperties
-    function onTextureClick(image: string) {
-        const texture = assets.getTexture(image)
-        editor.setSelectedObjectTexture(texture)
+    function onTextureClick(url: string) {
+        const texture = assets.getTexture(url)
+        editor.setSelectedObjectTexture(texture, url)
     }
     function onCloseClick() {
         editor.setSelectedObject(null!)
@@ -46,8 +46,8 @@ export function TextureMenu() {
     return (
         <div style={style}>
             {
-                AllTextures.map((image) => (
-                    <Image key={image} src={image} alt={image} width={64} height={64} onClick={() => onTextureClick(image)} />
+                AllTextures.map((url) => (
+                    <Image key={url} src={url} alt={url} width={64} height={64} onClick={() => onTextureClick(url)} />
                 ))
             }
             <br/>
