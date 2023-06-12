@@ -50,15 +50,13 @@ export default function ThreePlace() {
       <style jsx global>{`
                 html,
                 body,
-                body > div:first-child,
-                div#__next,
-                div#__next > div {
+                div#__next {
                     padding: 0;
                     margin: 0;
                     height: 100%;
                 }
             `}
-      </style>
+            </style>
       <Canvas style={{ display: 'block', width: '100%', height: '100%' }}
         camera={{ position: [0, 0.5, 0], rotation: [0, -Math.PI / 2, 0] }}>
         <Scene />

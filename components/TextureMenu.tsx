@@ -34,7 +34,6 @@ export function TextureMenu() {
     if (gui.activeMenu != 'TextureMenu') {
         return <></>
     }
-    const style = { position: 'absolute', left: 0, top: 0, height: 'auto' } as CSSProperties
     function onTextureClick(url: string) {
         const texture = assets.getTexture(url)
         editor.setSelectedObjectTexture(texture, url)
@@ -44,7 +43,7 @@ export function TextureMenu() {
         gui.setActiveMenu('')
     }
     return (
-        <div style={style}>
+        <div className={"flex absolute left-0 top-0 w-full justify-center items-center"}>
             {
                 AllTextures.map((url) => (
                     <Image key={url} src={url} alt={url} width={64} height={64} onClick={() => onTextureClick(url)} />

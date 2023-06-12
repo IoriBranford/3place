@@ -63,9 +63,9 @@ function Scene({ roomProps, objects }: {
         <Line ref={floorGrid} color={'white'} segments={true}
             points={horizontalGridPoints(roomProps.width, 1 / 256, editor.cellSize)} />
         <Line ref={ceilingGrid} color={'white'} segments={true}
-            points={horizontalGridPoints(roomProps.width, roomProps.height - 1/256, editor.cellSize)}/>
+            points={horizontalGridPoints(roomProps.width, roomProps.height - 1 / 256, editor.cellSize)} />
         <Line ref={wallsGrid} color={'white'} segments={true}
-            points={wallGridPoints(roomProps.width, roomProps.height, editor.cellSize)}/>
+            points={wallGridPoints(roomProps.width, roomProps.height, editor.cellSize)} />
     </>
 }
 
@@ -147,9 +147,7 @@ export default function RoomPage() {
             <style jsx global>{`
                 html,
                 body,
-                body > div:first-child,
-                div#__next,
-                div#__next > div {
+                div#__next {
                     padding: 0;
                     margin: 0;
                     height: 100%;
@@ -157,7 +155,7 @@ export default function RoomPage() {
             `}
             </style>
             <Canvas ref={canvasRef}
-                style={{ display: 'block', width: '100%', height: '100%' }}
+                className={"block w-full h-full"}
                 camera={{ position: [0, .5, 0], rotation: [0, -Math.PI / 2, 0] }}
                 onMouseDown={(event) => {
                     if (event.button == 2)
