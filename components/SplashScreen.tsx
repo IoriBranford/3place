@@ -1,27 +1,23 @@
-import { CSSProperties } from "react"
-import styles from '../styles/Home.module.css';
 import Link from "next/link";
 
 export function SplashScreen() {
-  let style = { position: 'absolute', left: 0, top: 0, width: '100%' } as CSSProperties
-
   let roomUrl = '/room/default' // if logged in, get user's start room
 
   return (
-    <div className={styles.container} style={style}>
+    <div className={"absolute left-0 top-0 w-full min-h-screen py-0 px-2 flex flex-col justify-center items-center"}>
 
       <main>
-        <h1 className={styles.title}>
+        <h1 className={"mt-0 mx-0 mb-4 text-6xl leading-tight text-center"}>
           Welcome to 3place!
         </h1>
 
-        <p className={styles.description}>
+        <p className={"text-center text-2xl leading-normal"}>
           Your virtual rooms on the Web
         </p>
 
-        <div className={styles.grid}>
+        <div className={"flex items-center justify-center flex-wrap max-w-screen-md mt-12"}>
           <Link href={roomUrl}>
-            <div className={styles.card}>
+            <div className={"m-4 basis-1/2 p-6 text-left text-inherit no-underline border border-solid border-white rounded-xl transition-colors hover:border-blue-600 focus:border-blue-600 active:border-blue-600"}>
               ENTER
             </div>
           </Link>
