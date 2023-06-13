@@ -1,4 +1,4 @@
-import { useContext, CSSProperties } from "react"
+import { useContext } from "react"
 import Image from "next/image"
 import { EditorContext } from "../contexts/Editor"
 import { AssetsContext } from "../contexts/Assets"
@@ -46,7 +46,7 @@ export function TextureMenu() {
         <div className={"flex absolute left-0 top-0 w-full justify-center items-center"}>
             {
                 AllTextures.map((url) => (
-                    <Image key={url} src={url} alt={url} width={64} height={64} onClick={() => onTextureClick(url)} />
+                    <Image className={"border rounded"} key={url} src={url} alt={url} width={64} height={64} onClick={() => onTextureClick(url)} />
                 ))
             }
             <br/>
